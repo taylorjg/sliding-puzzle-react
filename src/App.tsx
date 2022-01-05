@@ -7,6 +7,17 @@ const MainContent = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  /* small screens in portrait mode */
+  @media only screen and (max-device-width: 479px) and (orientation: portrait) {
+    width: 100%;
+  }
+
+  /* small and medium screens in landscape mode */
+  @media only screen and (max-device-width: 1023px) and (orientation: landscape) {
+    width: 100%;
+    flex-direction: row;
+  }
 `
 
 const PuzzleSize = () => {
@@ -14,9 +25,9 @@ const PuzzleSize = () => {
     <div>
       <span>Puzzle size:</span>
       &nbsp;
-      <select>
-        <option>3x3</option>
-        <option selected>4x4</option>
+      <select defaultValue="">
+        <option value="3x3">3 x 3</option>
+        <option value="4x4">4 x 4</option>
       </select>
     </div>
   )
@@ -43,6 +54,12 @@ const StyledPanel1 = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  /* small and medium screens in landscape mode */
+  @media only screen and (max-device-width: 1023px) and (orientation: landscape) {
+    /* make the square's size a bit smaller than the available height to allow room for the puzzle size dropdown menu */
+    width: 80vh;
+  }
 `
 
 const Panel1 = () => {
@@ -90,7 +107,7 @@ const Panel2 = () => {
       <StyledPanelRow>
         <span>Animation speed:</span>
         &nbsp;
-        <input type="range" min="0" max="1" step="0.1" list="tickmarks" value="0.2" />
+        <input type="range" min="0" max="1" step="0.1" list="tickmarks" defaultValue="0.2" />
         <datalist id="tickmarks">
           <option value="0.0"></option>
           <option value="0.1"></option>
