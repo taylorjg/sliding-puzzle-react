@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styled from "styled-components"
+import { initGame } from './game'
 
 const MainContent = styled.div`
   width: 480px;
@@ -45,14 +46,26 @@ const PuzzleOuter = styled.div`
   position: relative;
 `
 
-const PuzzleInner = styled.div`
+const StyledPuzzleInner = styled.div.attrs({ id: 'puzzle' })`
   position: absolute;
   left: .5rem;
   right: .5rem;
   top: .5rem;
   bottom: .5rem;
-  background: #66F;
+  background: #000000;
 `
+
+const PuzzleInner = () => {
+
+  useEffect(() => {
+    const game = initGame()
+    console.dir(game)
+  }, [])
+
+  return (
+    <StyledPuzzleInner />
+  )
+}
 
 const Panel1 = styled.div`
   width: 100%;
