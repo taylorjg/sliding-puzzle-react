@@ -21,12 +21,12 @@ const MainContent = styled.div`
   }
 `
 
-interface PuzzleSizeProps {
+interface PuzzleSizeRowProps {
   puzzleSize: string;
   onChangePuzzleSize: (value: string) => void;
 }
 
-const PuzzleSize: React.FC<PuzzleSizeProps> = ({ puzzleSize, onChangePuzzleSize }) => {
+const PuzzleSizeRow: React.FC<PuzzleSizeRowProps> = ({ puzzleSize, onChangePuzzleSize }) => {
   return (
     <div>
       <span>Puzzle size:</span>
@@ -54,7 +54,7 @@ const PuzzleInner = styled.div`
   background: #66F;
 `
 
-const StyledPanel1 = styled.div`
+const Panel1 = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -68,70 +68,62 @@ const StyledPanel1 = styled.div`
   }
 `
 
-interface Panel1Props extends PuzzleSizeProps {
-}
-
-const Panel1: React.FC<Panel1Props> = ({ puzzleSize, onChangePuzzleSize }) => {
-  return (
-    <StyledPanel1>
-      <PuzzleSize puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
-      <PuzzleOuter>
-        <PuzzleInner />
-      </PuzzleOuter>
-    </StyledPanel1>
-  )
-}
-
-const StyledPanelRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: .5rem;
-`
-
-const StyledPanel2 = styled.div`
+const Panel2 = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 `
 
-const Panel2 = () => {
+const PanelRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: .5rem;
+`
+
+const MoveCountRow = () => {
   return (
-    <StyledPanel2>
-      <StyledPanelRow>
-        <span>Move count:</span>
-        &nbsp;
-        <span>0</span>
-      </StyledPanelRow>
+    <PanelRow>
+      <span>Move count:</span>
+      &nbsp;
+      <span>0</span>
+    </PanelRow>
+  )
+}
 
-      <StyledPanelRow>
-        <button>Reset</button>
-        &nbsp;
-        <button>Scramble</button>
-        &nbsp;
-        <button>Solve</button>
-      </StyledPanelRow>
+const ButtonsRow = () => {
+  return (
+    <PanelRow>
+      <button>Reset</button>
+      &nbsp;
+      <button>Scramble</button>
+      &nbsp;
+      <button>Solve</button>
+    </PanelRow>
+  )
+}
 
-      <StyledPanelRow>
-        <span>Animation speed:</span>
-        &nbsp;
-        <input type="range" min="0" max="1" step="0.1" list="tickmarks" defaultValue="0.2" />
-        <datalist id="tickmarks">
-          <option value="0.0"></option>
-          <option value="0.1"></option>
-          <option value="0.2"></option>
-          <option value="0.3"></option>
-          <option value="0.4"></option>
-          <option value="0.5"></option>
-          <option value="0.6"></option>
-          <option value="0.7"></option>
-          <option value="0.8"></option>
-          <option value="0.9"></option>
-          <option value="1.0"></option>
-        </datalist>
-      </StyledPanelRow>
-    </StyledPanel2>
+const AnimationSpeedRow = () => {
+  return (
+    <PanelRow>
+      <span>Animation speed:</span>
+      &nbsp;
+      <input type="range" min="0" max="1" step="0.1" list="tickmarks" defaultValue="0.2" />
+      <datalist id="tickmarks">
+        <option value="0.0"></option>
+        <option value="0.1"></option>
+        <option value="0.2"></option>
+        <option value="0.3"></option>
+        <option value="0.4"></option>
+        <option value="0.5"></option>
+        <option value="0.6"></option>
+        <option value="0.7"></option>
+        <option value="0.8"></option>
+        <option value="0.9"></option>
+        <option value="1.0"></option>
+      </datalist>
+    </PanelRow>
   )
 }
 
@@ -145,8 +137,17 @@ const App = () => {
 
   return (
     <MainContent>
-      <Panel1 puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
-      <Panel2 />
+      <Panel1>
+        <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
+        <PuzzleOuter>
+          <PuzzleInner />
+        </PuzzleOuter>
+      </Panel1>
+      <Panel2>
+        <MoveCountRow />
+        <ButtonsRow />
+        <AnimationSpeedRow />
+      </Panel2>
     </MainContent>
   )
 }
