@@ -1,3 +1,4 @@
+import { useState } from "react"
 import styled from "styled-components"
 
 const MainContent = styled.div`
@@ -20,12 +21,17 @@ const MainContent = styled.div`
   }
 `
 
-const PuzzleSize = () => {
+interface PuzzleSizeProps {
+  puzzleSize: string;
+  onChangePuzzleSize: (value: string) => void;
+}
+
+const PuzzleSize: React.FC<PuzzleSizeProps> = ({ puzzleSize, onChangePuzzleSize }) => {
   return (
     <div>
       <span>Puzzle size:</span>
       &nbsp;
-      <select defaultValue="">
+      <select value={puzzleSize} onChange={e => onChangePuzzleSize(e.target.value)}>
         <option value="3x3">3 x 3</option>
         <option value="4x4">4 x 4</option>
       </select>
@@ -62,10 +68,13 @@ const StyledPanel1 = styled.div`
   }
 `
 
-const Panel1 = () => {
+interface Panel1Props extends PuzzleSizeProps {
+}
+
+const Panel1: React.FC<Panel1Props> = ({ puzzleSize, onChangePuzzleSize }) => {
   return (
     <StyledPanel1>
-      <PuzzleSize />
+      <PuzzleSize puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
       <PuzzleOuter>
         <PuzzleInner />
       </PuzzleOuter>
@@ -127,9 +136,16 @@ const Panel2 = () => {
 }
 
 const App = () => {
+
+  const [puzzleSize, setPuzzleSize] = useState('4x4')
+
+  const onChangePuzzleSize = (value: string) => {
+    setPuzzleSize(value)
+  }
+
   return (
     <MainContent>
-      <Panel1 />
+      <Panel1 puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
       <Panel2 />
     </MainContent>
   )
