@@ -5,6 +5,21 @@ import * as Phaser from "phaser"
 // square as a result of the CSS applied to it.
 const SIZE = 400
 
+class GameScene extends Phaser.Scene {
+
+  public constructor() {
+    super("GameScene")
+  }
+
+  public init() {
+    console.log("[GameScene#init]")
+  }
+
+  public create() {
+    console.log("[GameScene#create]")
+  }
+}
+
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   scale: {
@@ -13,7 +28,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT
   },
   backgroundColor: "#000000",
-  scene: [],
+  scene: [GameScene],
   parent: "puzzle",
   dom: {
     createContainer: true

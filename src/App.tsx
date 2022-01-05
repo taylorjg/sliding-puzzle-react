@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
-import { initGame } from './game'
+import { initGame } from "./game"
 
 const MainContent = styled.div`
   width: 480px;
@@ -46,7 +46,7 @@ const PuzzleOuter = styled.div`
   position: relative;
 `
 
-const StyledPuzzleInner = styled.div.attrs({ id: 'puzzle' })`
+const StyledPuzzleInner = styled.div.attrs({ id: "puzzle" })`
   position: absolute;
   left: .5rem;
   right: .5rem;
@@ -96,7 +96,7 @@ const PanelRow = styled.div`
 `
 
 const HideablePanelRow = styled(PanelRow) <{ hidden: boolean }>`
-  visibility: ${props => props.hidden ? 'hidden' : 'visible'};
+  visibility: ${props => props.hidden ? "hidden" : "visible"};
 `
 
 interface MoveCountRowProps {
@@ -172,7 +172,7 @@ const AnimationSpeedRow: React.FC<AnimationSpeedRowProps> = ({ solving }) => {
 
 const App = () => {
 
-  const [puzzleSize, setPuzzleSize] = useState('4x4')
+  const [puzzleSize, setPuzzleSize] = useState("4x4")
   const [moveCount, setMoveCount] = useState(0)
   const [solving, setSolving] = useState(false)
 
