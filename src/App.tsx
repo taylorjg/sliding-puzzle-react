@@ -82,20 +82,33 @@ const PanelRow = styled.div`
   margin-bottom: .5rem;
 `
 
-const MoveCountRow = () => {
+interface MoveCountRowProps {
+  moveCount: number
+}
+
+const MoveCountRow: React.FC<MoveCountRowProps> = ({ moveCount }) => {
   return (
     <PanelRow>
       <span>Move count:</span>
       &nbsp;
-      <span>0</span>
+      <span>{moveCount}</span>
     </PanelRow>
   )
 }
 
-const ButtonsRow = () => {
+interface ButtonsRowProps {
+  onReset: () => void
+  // onScramble: () => void
+  // onSolve: () => void
+  // onCancel: () => void
+}
+
+const ButtonsRow: React.FC<ButtonsRowProps> = ({
+  onReset
+}) => {
   return (
     <PanelRow>
-      <button>Reset</button>
+      <button onClick={() => onReset()}>Reset</button>
       &nbsp;
       <button>Scramble</button>
       &nbsp;
@@ -130,10 +143,24 @@ const AnimationSpeedRow = () => {
 const App = () => {
 
   const [puzzleSize, setPuzzleSize] = useState('4x4')
+  const [moveCount, setMoveCount] = useState(0)
 
   const onChangePuzzleSize = (value: string) => {
     setPuzzleSize(value)
   }
+
+  const onReset = () => {
+    setMoveCount(0)
+  }
+
+  // const onScramble = () => {
+  // }
+
+  // const onSolve = () => {
+  // }
+
+  // const onCancel = () => {
+  // }
 
   return (
     <MainContent>
@@ -144,8 +171,8 @@ const App = () => {
         </PuzzleOuter>
       </Panel1>
       <Panel2>
-        <MoveCountRow />
-        <ButtonsRow />
+        <MoveCountRow moveCount={moveCount} />
+        <ButtonsRow onReset={onReset} />
         <AnimationSpeedRow />
       </Panel2>
     </MainContent>
