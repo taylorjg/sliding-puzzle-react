@@ -82,6 +82,10 @@ const PanelRow = styled.div`
   margin-bottom: .5rem;
 `
 
+const HideablePanelRow = styled(PanelRow) <{ hidden: boolean }>`
+  visibility: ${props => props.hidden ? 'hidden' : 'visible'};
+`
+
 interface MoveCountRowProps {
   moveCount: number
 }
@@ -97,29 +101,42 @@ const MoveCountRow: React.FC<MoveCountRowProps> = ({ moveCount }) => {
 }
 
 interface ButtonsRowProps {
+  solving: boolean
   onReset: () => void
-  // onScramble: () => void
-  // onSolve: () => void
-  // onCancel: () => void
+  onScramble: () => void
+  onSolve: () => void
+  onCancel: () => void
 }
 
 const ButtonsRow: React.FC<ButtonsRowProps> = ({
-  onReset
+  solving,
+  onReset,
+  onScramble,
+  onSolve,
+  onCancel
 }) => {
   return (
     <PanelRow>
-      <button onClick={() => onReset()}>Reset</button>
+      <button onClick={() => onReset()} disabled={solving}>Reset</button>
       &nbsp;
-      <button>Scramble</button>
+      <button onClick={() => onScramble()} disabled={solving}>Scramble</button>
       &nbsp;
-      <button>Solve</button>
+      {
+        solving
+          ? <button onClick={() => onCancel()}>Cancel</button>
+          : <button onClick={() => onSolve()}>Solve</button>
+      }
     </PanelRow>
   )
 }
 
-const AnimationSpeedRow = () => {
+interface AnimationSpeedRowProps {
+  solving: boolean
+}
+
+const AnimationSpeedRow: React.FC<AnimationSpeedRowProps> = ({ solving }) => {
   return (
-    <PanelRow>
+    <HideablePanelRow hidden={!solving}>
       <span>Animation speed:</span>
       &nbsp;
       <input type="range" min="0" max="1" step="0.1" list="tickmarks" defaultValue="0.2" />
@@ -136,7 +153,7 @@ const AnimationSpeedRow = () => {
         <option value="0.9"></option>
         <option value="1.0"></option>
       </datalist>
-    </PanelRow>
+    </HideablePanelRow>
   )
 }
 
@@ -144,6 +161,7 @@ const App = () => {
 
   const [puzzleSize, setPuzzleSize] = useState('4x4')
   const [moveCount, setMoveCount] = useState(0)
+  const [solving, setSolving] = useState(false)
 
   const onChangePuzzleSize = (value: string) => {
     setPuzzleSize(value)
@@ -153,14 +171,17 @@ const App = () => {
     setMoveCount(0)
   }
 
-  // const onScramble = () => {
-  // }
+  const onScramble = () => {
+    setMoveCount(0)
+  }
 
-  // const onSolve = () => {
-  // }
+  const onSolve = () => {
+    setSolving(true)
+  }
 
-  // const onCancel = () => {
-  // }
+  const onCancel = () => {
+    setSolving(false)
+  }
 
   return (
     <MainContent>
@@ -172,8 +193,14 @@ const App = () => {
       </Panel1>
       <Panel2>
         <MoveCountRow moveCount={moveCount} />
-        <ButtonsRow onReset={onReset} />
-        <AnimationSpeedRow />
+        <ButtonsRow
+          solving={solving}
+          onReset={onReset}
+          onScramble={onScramble}
+          onSolve={onSolve}
+          onCancel={onCancel}
+        />
+        <AnimationSpeedRow solving={solving} />
       </Panel2>
     </MainContent>
   )
