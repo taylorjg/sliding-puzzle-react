@@ -8,6 +8,7 @@ const SIZE = 400
 class GameScene extends Phaser.Scene {
 
   public constructor() {
+    console.log("[GameScene#constructor]")
     super("GameScene")
   }
 
@@ -17,6 +18,15 @@ class GameScene extends Phaser.Scene {
     this.game.events.on("RESET_BOARD", this.onResetBoard, this)
     this.game.events.on("START_SOLUTION_PRESENTATION", this.onStartSolutionPresentation, this)
     this.game.events.on("CANCEL_SOLUTION_PRESENTATION", this.onCancelSolutionPresentation, this)
+
+    const tile = this.add.rectangle(100, 100, 100, 100, 0xFFFF00)
+    tile.setInteractive({ useHandCursor: true })
+    tile.on(Phaser.Input.Events.POINTER_DOWN, this.onTileClick, this)
+    this.add.existing(tile)
+  }
+
+  private onTileClick() {
+    this.game.events.emit("MOVE")
   }
 
   private onEnterReadonlyMode() {

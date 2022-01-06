@@ -58,12 +58,14 @@ const StyledPuzzle = styled.div.attrs({ id: "puzzle" })`
 
 interface PuzzleProps {
   onGameObjectCreated: (game: Phaser.Game) => void
+  onMove: () => void
 }
 
-const Puzzle: React.FC<PuzzleProps> = ({ onGameObjectCreated }) => {
+const Puzzle: React.FC<PuzzleProps> = ({ onGameObjectCreated, onMove }) => {
 
   useEffect(() => {
     const game = initGame()
+    game.events.on("MOVE", onMove)
     onGameObjectCreated(game)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -187,6 +189,10 @@ const App = () => {
     setGame(game)
   }
 
+  const onMove = () => {
+    setMoveCount(currentMoveCount => currentMoveCount + 1)
+  }
+
   const onChangePuzzleSize = (value: string) => {
     setPuzzleSize(value)
   }
@@ -215,7 +221,7 @@ const App = () => {
       <Panel1>
         <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
         <PuzzleWrapper>
-          <Puzzle onGameObjectCreated={onGameObjectCreated} />
+          <Puzzle onGameObjectCreated={onGameObjectCreated} onMove={onMove} />
         </PuzzleWrapper>
       </Panel1>
       <Panel2>
