@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions } from "./game"
+import { scrambleSolvedPuzzle } from "./logic/logic"
+
+const SOLVED_3x3 = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 0]
+]
+
+const SOLVED_4x4 = [
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+  [9, 10, 11, 12],
+  [13, 14, 15, 0]
+]
 
 const MainContent = styled.div`
   width: 480px;
@@ -177,12 +191,30 @@ const AnimationSpeedRow: React.FC<AnimationSpeedRowProps> = ({ solving }) => {
   )
 }
 
+const getSolvedPuzzle = (puzzleSize: string): Number[][] => {
+  switch (puzzleSize) {
+    case "3x3": return SOLVED_3x3
+    case "4x4": return SOLVED_4x4
+    default: throw new Error(`unknown puzzleSize ${puzzleSize}`)
+  }
+}
+
+const getScrambledPuzzle = (puzzleSize: string): Number[][] => {
+  return scrambleSolvedPuzzle(getSolvedPuzzle(puzzleSize))
+}
+
 const App = () => {
 
   const [puzzleSize, setPuzzleSize] = useState("4x4")
+  const [puzzle, setPuzzle] = useState(getSolvedPuzzle(puzzleSize))
   const [moveCount, setMoveCount] = useState(0)
   const [solving, setSolving] = useState(false)
   const [puzzleActions, setPuzzleActions] = useState<PuzzleActions | undefined>(undefined)
+
+  const onGameInitialised = (puzzleActions: PuzzleActions) => {
+    setPuzzleActions(puzzleActions)
+    setPuzzle(getScrambledPuzzle(puzzleSize))
+  }
 
   const onTileMoved = () => {
     setMoveCount(currentMoveCount => currentMoveCount + 1)
@@ -192,14 +224,22 @@ const App = () => {
     setPuzzleSize(value)
   }
 
+  useEffect(() => {
+    setPuzzle(getScrambledPuzzle(puzzleSize))
+  }, [puzzleSize]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    puzzleActions?.resetBoard(puzzle)
+  }, [puzzle]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const onReset = () => {
     setMoveCount(0)
-    puzzleActions?.resetBoard([1, 2, 3, 4, 5, 6, 7, 8, 0])
+    puzzleActions?.resetBoard(puzzle)
   }
 
   const onScramble = () => {
     setMoveCount(0)
-    puzzleActions?.startSolutionPresentation([1, 2, 3])
+    setPuzzle(getScrambledPuzzle(puzzleSize))
   }
 
   const onSolve = () => {
@@ -215,7 +255,7 @@ const App = () => {
       <Panel1>
         <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
         <PuzzleWrapper>
-          <Puzzle onGameInitialised={setPuzzleActions} onTileMoved={onTileMoved} />
+          <Puzzle onGameInitialised={onGameInitialised} onTileMoved={onTileMoved} />
         </PuzzleWrapper>
       </Panel1>
       <Panel2>
