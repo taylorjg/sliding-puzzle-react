@@ -1,7 +1,6 @@
-import * as Phaser from "phaser"
 import { useEffect, useState } from "react"
 import styled from "styled-components"
-import { initGame } from "./game"
+import { initGame, PuzzleActions, makePuzzleActions } from "./game"
 
 const MainContent = styled.div`
   width: 480px;
@@ -57,16 +56,17 @@ const StyledPuzzle = styled.div.attrs({ id: "puzzle" })`
 `
 
 interface PuzzleProps {
-  onGameObjectCreated: (game: Phaser.Game) => void
-  onMove: () => void
+  onGameInitialised: (puzzleActions: PuzzleActions) => void
+  onTileMoved: () => void
 }
 
-const Puzzle: React.FC<PuzzleProps> = ({ onGameObjectCreated, onMove }) => {
+const Puzzle: React.FC<PuzzleProps> = ({ onGameInitialised, onTileMoved }) => {
 
   useEffect(() => {
     const game = initGame()
-    game.events.on("MOVE", onMove)
-    onGameObjectCreated(game)
+    game.events.on("TILE_MOVED", onTileMoved)
+    const puzzleActions = makePuzzleActions(game)
+    onGameInitialised(puzzleActions)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -182,14 +182,9 @@ const App = () => {
   const [puzzleSize, setPuzzleSize] = useState("4x4")
   const [moveCount, setMoveCount] = useState(0)
   const [solving, setSolving] = useState(false)
-  const [game, setGame] = useState<Phaser.Game | undefined>(undefined)
+  const [puzzleActions, setPuzzleActions] = useState<PuzzleActions | undefined>(undefined)
 
-  const onGameObjectCreated = (game: Phaser.Game) => {
-    console.dir(game)
-    setGame(game)
-  }
-
-  const onMove = () => {
+  const onTileMoved = () => {
     setMoveCount(currentMoveCount => currentMoveCount + 1)
   }
 
@@ -199,13 +194,12 @@ const App = () => {
 
   const onReset = () => {
     setMoveCount(0)
-    if (game) {
-      game.events.emit("RESET_BOARD", [1, 2, 3, 4, 5, 6, 7, 8, 0])
-    }
+    puzzleActions?.resetBoard([1, 2, 3, 4, 5, 6, 7, 8, 0])
   }
 
   const onScramble = () => {
     setMoveCount(0)
+    puzzleActions?.startSolutionPresentation([1, 2, 3])
   }
 
   const onSolve = () => {
@@ -221,7 +215,7 @@ const App = () => {
       <Panel1>
         <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
         <PuzzleWrapper>
-          <Puzzle onGameObjectCreated={onGameObjectCreated} onMove={onMove} />
+          <Puzzle onGameInitialised={setPuzzleActions} onTileMoved={onTileMoved} />
         </PuzzleWrapper>
       </Panel1>
       <Panel2>

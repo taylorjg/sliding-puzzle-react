@@ -5,6 +5,22 @@ import * as Phaser from "phaser"
 // square as a result of the CSS applied to it.
 const SIZE = 400
 
+export interface PuzzleActions {
+  enterReadonlyMode: () => void
+  resetBoard: (puzzle: Number[]) => void
+  startSolutionPresentation: (solution: Number[]) => void
+  cancelSolutionPresentation: () => void
+}
+
+export const makePuzzleActions = (game: Phaser.Game): PuzzleActions => {
+  return {
+    enterReadonlyMode: () => game.events.emit("ENTER_READONLY_MODE"),
+    resetBoard: (puzzle: Number[]) => game.events.emit("RESET_BOARD", puzzle),
+    startSolutionPresentation: (solution: Number[]) => game.events.emit("START_SOLUTION_PRESENTATION", solution),
+    cancelSolutionPresentation: () => game.events.emit("CANCEL_SOLUTION_PRESENTATION")
+  }
+}
+
 class GameScene extends Phaser.Scene {
 
   public constructor() {
@@ -26,7 +42,7 @@ class GameScene extends Phaser.Scene {
   }
 
   private onTileClick() {
-    this.game.events.emit("MOVE")
+    this.game.events.emit("TILE_MOVED")
   }
 
   private onEnterReadonlyMode() {
