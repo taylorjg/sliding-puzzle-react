@@ -1,3 +1,4 @@
+import * as Phaser from "phaser"
 import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { initGame } from "./game"
@@ -40,13 +41,13 @@ const PuzzleSizeRow: React.FC<PuzzleSizeRowProps> = ({ puzzleSize, onChangePuzzl
   )
 }
 
-const PuzzleOuter = styled.div`
+const PuzzleWrapper = styled.div`
   width: 100%;
   padding-bottom: 100%;
   position: relative;
 `
 
-const StyledPuzzleInner = styled.div.attrs({ id: "puzzle" })`
+const StyledPuzzle = styled.div.attrs({ id: "puzzle" })`
   position: absolute;
   left: .5rem;
   right: .5rem;
@@ -55,15 +56,19 @@ const StyledPuzzleInner = styled.div.attrs({ id: "puzzle" })`
   background: #000000;
 `
 
-const PuzzleInner = () => {
+interface PuzzleProps {
+  onGameObjectCreated: (game: Phaser.Game) => void
+}
+
+const Puzzle: React.FC<PuzzleProps> = ({ onGameObjectCreated }) => {
 
   useEffect(() => {
     const game = initGame()
-    console.dir(game)
-  }, [])
+    onGameObjectCreated(game)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <StyledPuzzleInner />
+    <StyledPuzzle />
   )
 }
 
@@ -175,6 +180,12 @@ const App = () => {
   const [puzzleSize, setPuzzleSize] = useState("4x4")
   const [moveCount, setMoveCount] = useState(0)
   const [solving, setSolving] = useState(false)
+  const [game, setGame] = useState<Phaser.Game | undefined>(undefined)
+
+  const onGameObjectCreated = (game: Phaser.Game) => {
+    console.dir(game)
+    setGame(game)
+  }
 
   const onChangePuzzleSize = (value: string) => {
     setPuzzleSize(value)
@@ -182,6 +193,9 @@ const App = () => {
 
   const onReset = () => {
     setMoveCount(0)
+    if (game) {
+      game.events.emit("RESET_BOARD", [1, 2, 3, 4, 5, 6, 7, 8, 0])
+    }
   }
 
   const onScramble = () => {
@@ -200,9 +214,9 @@ const App = () => {
     <MainContent>
       <Panel1>
         <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
-        <PuzzleOuter>
-          <PuzzleInner />
-        </PuzzleOuter>
+        <PuzzleWrapper>
+          <Puzzle onGameObjectCreated={onGameObjectCreated} />
+        </PuzzleWrapper>
       </Panel1>
       <Panel2>
         <MoveCountRow moveCount={moveCount} />

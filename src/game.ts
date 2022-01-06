@@ -11,12 +11,26 @@ class GameScene extends Phaser.Scene {
     super("GameScene")
   }
 
-  public init() {
-    console.log("[GameScene#init]")
-  }
-
   public create() {
     console.log("[GameScene#create]")
+    this.game.events.on("ENTER_READONLY_MODE", this.onEnterReadonlyMode, this)
+    this.game.events.on("RESET_BOARD", this.onResetBoard, this)
+    this.game.events.on("START_SOLUTION_PRESENTATION", this.onStartSolutionPresentation, this)
+    this.game.events.on("CANCEL_SOLUTION_PRESENTATION", this.onCancelSolutionPresentation, this)
+  }
+
+  private onEnterReadonlyMode() {
+  }
+
+  private onResetBoard(puzzle: number[]) {
+    console.dir(puzzle)
+  }
+
+  private onStartSolutionPresentation(solution: number[]) {
+    console.dir(solution)
+  }
+
+  private onCancelSolutionPresentation() {
   }
 }
 
@@ -29,10 +43,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   backgroundColor: "#000000",
   scene: [GameScene],
-  parent: "puzzle",
-  dom: {
-    createContainer: true
-  }
+  parent: "puzzle"
 }
 
 export const initGame = () => {
