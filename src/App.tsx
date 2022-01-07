@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions } from "./game"
 import { scrambleSolvedPuzzle } from "./logic"
+import packageJson from "../package.json"
 
 const SOLVED_3x3 = [
   [1, 2, 3],
@@ -15,6 +16,14 @@ const SOLVED_4x4 = [
   [9, 10, 11, 12],
   [13, 14, 15, 0]
 ]
+
+const Version = styled.div`
+  position: fixed;
+  bottom: .5rem;
+  right: .5rem;
+  font-size: small;
+  font-style: italic;
+`
 
 const MainContent = styled.div`
   width: 480px;
@@ -158,7 +167,7 @@ const ButtonsRow: React.FC<ButtonsRowProps> = ({
       {
         solving
           ? <button onClick={() => onCancel()}>Cancel</button>
-          : <button onClick={() => onSolve()}>Solve</button>
+          : <button disabled onClick={() => onSolve()}>Solve</button>
       }
     </PanelRow>
   )
@@ -251,25 +260,28 @@ const App = () => {
   }
 
   return (
-    <MainContent>
-      <Panel1>
-        <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
-        <PuzzleWrapper>
-          <Puzzle onGameInitialised={onGameInitialised} onTileMoved={onTileMoved} />
-        </PuzzleWrapper>
-      </Panel1>
-      <Panel2>
-        <MoveCountRow moveCount={moveCount} />
-        <ButtonsRow
-          solving={solving}
-          onReset={onReset}
-          onScramble={onScramble}
-          onSolve={onSolve}
-          onCancel={onCancel}
-        />
-        <AnimationSpeedRow solving={solving} />
-      </Panel2>
-    </MainContent>
+    <>
+      <MainContent>
+        <Panel1>
+          <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
+          <PuzzleWrapper>
+            <Puzzle onGameInitialised={onGameInitialised} onTileMoved={onTileMoved} />
+          </PuzzleWrapper>
+        </Panel1>
+        <Panel2>
+          <MoveCountRow moveCount={moveCount} />
+          <ButtonsRow
+            solving={solving}
+            onReset={onReset}
+            onScramble={onScramble}
+            onSolve={onSolve}
+            onCancel={onCancel}
+          />
+          <AnimationSpeedRow solving={solving} />
+        </Panel2>
+      </MainContent>
+      <Version>version: {packageJson.version}</Version>
+    </>
   )
 }
 
