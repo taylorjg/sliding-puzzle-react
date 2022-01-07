@@ -42,6 +42,7 @@ const MainContent = styled.div`
   @media only screen and (max-device-width: 1023px) and (orientation: landscape) {
     width: 100%;
     flex-direction: row;
+    align-items: end;
   }
 `
 
@@ -107,7 +108,7 @@ const Panel1 = styled.div`
   /* small and medium screens in landscape mode */
   @media only screen and (max-device-width: 1023px) and (orientation: landscape) {
     /* make the square's size a bit smaller than the available height to allow room for the puzzle size dropdown menu */
-    width: 80vh;
+    width: 60vh;
   }
 `
 
