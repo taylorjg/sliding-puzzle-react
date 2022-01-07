@@ -1,5 +1,6 @@
 {
   "name": "sliding-puzzle-react",
+  "description": "Sliding Puzzle using React and Phaser",
   "version": "0.0.2",
   "private": true,
   "dependencies": {
