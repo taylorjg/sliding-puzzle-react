@@ -102,10 +102,10 @@ export class MyNode {
   }
 }
 
-const MOVE_UP = 1
-const MOVE_DOWN = 2
-const MOVE_LEFT = 3
-const MOVE_RIGHT = 4
+export const MOVE_UP = 1
+export const MOVE_DOWN = 2
+export const MOVE_LEFT = 3
+export const MOVE_RIGHT = 4
 
 const getReverseMove = move => {
   switch (move) {
@@ -164,7 +164,7 @@ const manhattanDistance = (position1, position2) => {
   return Math.abs(row1 - row2) + Math.abs(col1 - col2)
 }
 
-const getChildOfNodeAndMove = (node, move) => {
+export const getChildOfNodeAndMove = (node, move) => {
   const newTiles = copyTiles(node.boardManager.tiles)
   const childNode = new MyNode(newTiles, move)
   childNode.boardManager.makeMove(move)

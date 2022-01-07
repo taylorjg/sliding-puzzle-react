@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions } from "./game"
-import { scrambleSolvedPuzzle } from "./logic/logic"
+import { scrambleSolvedPuzzle } from "./logic"
 
 const SOLVED_3x3 = [
   [1, 2, 3],
