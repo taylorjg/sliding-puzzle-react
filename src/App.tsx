@@ -65,6 +65,8 @@ const PuzzleSizeRow: React.FC<PuzzleSizeRowProps> = ({ puzzleSize, onChangePuzzl
   )
 }
 
+// https://stackoverflow.com/questions/19068070/how-to-style-a-div-to-be-a-responsive-square
+// http://www.dwuser.com/education/content/creating-responsive-tiled-layout-with-pure-css/
 const PuzzleWrapper = styled.div`
   width: 100%;
   padding-bottom: 100%;
