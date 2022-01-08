@@ -171,18 +171,22 @@ export const getChildOfNodeAndMove = (node, move) => {
   return childNode
 }
 
+export const puzzleFromNode = (node, numCols) => {
+  const values = node.boardManager.tiles.map(tile => tile.value)
+  return Array.from(splitEvery(values, numCols))
+}
+
 export const scrambleSolvedPuzzle = solvedPuzzle => {
   const NUM_MOVES = 50
   const tiles = makeTiles(solvedPuzzle)
   let node = new SlidingPuzzleNode(tiles)
-  for (const _ of range(NUM_MOVES)) {
+  range(NUM_MOVES).forEach(() => {
     const possibleMoves = node.getPossibleMoves()
     const move = randomElement(possibleMoves)
     node = getChildOfNodeAndMove(node, move)
-  }
+  })
   const numCols = solvedPuzzle[0].length
-  const values = node.boardManager.tiles.map(tile => tile.value)
-  return Array.from(splitEvery(values, numCols))
+  return puzzleFromNode(node, numCols)
 }
 
 export const solve = node => {

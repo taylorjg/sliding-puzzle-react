@@ -28,6 +28,7 @@ class BoardScene extends Phaser.Scene {
   tileHeight = 0
   tiles: Phaser.GameObjects.Container[] = []
   node?: Logic.SlidingPuzzleNode
+  solution?: number[]
 
   public constructor() {
     super("BoardScene")
@@ -76,12 +77,10 @@ class BoardScene extends Phaser.Scene {
         ease: 'Sine.InOut',
         x,
         y,
-        onStart: () => {
-        },
         onComplete: () => {
           tile.setData({ row: newRow, col: newCol })
           this.node = Logic.getChildOfNodeAndMove(this.node, move)
-          this.game.events.emit("TILE_MOVED")
+          this.game.events.emit("TILE_MOVED", this.node)
         }
       })
     }
@@ -95,6 +94,53 @@ class BoardScene extends Phaser.Scene {
   }
 
   private onStartSolutionPresentation(solution: number[]) {
+    console.log('[BoardScene#onStartSolutionPresentation]', 'solution:', solution)
+    this.solution = solution
+    this.presentNextSolutionMove()
+  }
+
+  private presentNextSolutionMove() {
+    const move = this.solution?.shift()
+    if (move) {
+      const blankTileRef = this.node?.boardManager.blankTile
+      let tileRef: Logic.Tile
+      switch (move) {
+        case Logic.MOVE_UP:
+          tileRef = this.node?.boardManager.tiles[blankTileRef.upTileIndex]
+          break
+        case Logic.MOVE_DOWN:
+          tileRef = this.node?.boardManager.tiles[blankTileRef.downTileIndex]
+          break
+        case Logic.MOVE_LEFT:
+          tileRef = this.node?.boardManager.tiles[blankTileRef.leftTileIndex]
+          break
+        case Logic.MOVE_RIGHT:
+          tileRef = this.node?.boardManager.tiles[blankTileRef.rightTileIndex]
+          break
+      }
+      const tile = this.tiles.find(tile => {
+        const [row, col] = tile.getData(["row", "col"])
+        return row === tileRef.position[0] && col === tileRef.position[1]
+      })
+      if (tile) {
+        const [newRow, newCol] = blankTileRef.position
+        const x = GUTTER + newCol * this.tileWidth + this.tileWidth / 2
+        const y = GUTTER + newRow * this.tileHeight + this.tileHeight / 2
+        this.tweens.add({
+          targets: tile,
+          duration: 250,
+          ease: 'Sine.InOut',
+          x,
+          y,
+          onComplete: () => {
+            tile.setData({ row: newRow, col: newCol })
+            this.node = Logic.getChildOfNodeAndMove(this.node, move)
+            this.game.events.emit("TILE_MOVED", this.node)
+            this.presentNextSolutionMove()
+          }
+        })
+      }
+    }
   }
 
   private onCancelSolutionPresentation() {

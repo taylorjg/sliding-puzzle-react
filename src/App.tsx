@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions } from "./game"
-import { scrambleSolvedPuzzle } from "./logic"
+import * as Logic from "./logic"
 import Worker from "./worker"
 import packageJson from "../package.json"
 
@@ -84,7 +84,7 @@ const StyledPuzzle = styled.div.attrs({ id: "puzzle" })`
 
 interface PuzzleProps {
   onGameInitialised: (puzzleActions: PuzzleActions) => void
-  onTileMoved: () => void
+  onTileMoved: (node: Logic.SlidingPuzzleNode) => void
 }
 
 const Puzzle: React.FC<PuzzleProps> = ({ onGameInitialised, onTileMoved }) => {
@@ -213,13 +213,14 @@ const getSolvedPuzzle = (puzzleSize: string): number[][] => {
 }
 
 const getScrambledPuzzle = (puzzleSize: string): number[][] => {
-  return scrambleSolvedPuzzle(getSolvedPuzzle(puzzleSize))
+  return Logic.scrambleSolvedPuzzle(getSolvedPuzzle(puzzleSize))
 }
 
 const worker = new Worker()
 
 const App = () => {
 
+  const nodeRef = useRef<Logic.SlidingPuzzleNode>()
   const [puzzleSize, setPuzzleSize] = useState("4x4")
   const [puzzle, setPuzzle] = useState(getSolvedPuzzle(puzzleSize))
   const [moveCount, setMoveCount] = useState(0)
@@ -231,7 +232,8 @@ const App = () => {
     setPuzzle(getScrambledPuzzle(puzzleSize))
   }
 
-  const onTileMoved = () => {
+  const onTileMoved = (node: Logic.SlidingPuzzleNode) => {
+    nodeRef.current = node
     setMoveCount(currentMoveCount => currentMoveCount + 1)
   }
 
@@ -244,6 +246,8 @@ const App = () => {
   }, [puzzleSize]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    const tiles = Logic.makeTiles(puzzle)
+    nodeRef.current = new Logic.SlidingPuzzleNode(tiles)
     puzzleActions?.resetBoard(puzzle)
   }, [puzzle]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -258,10 +262,14 @@ const App = () => {
   }
 
   const onSolve = async () => {
-    setSolving(true)
-    const solution = await worker.solve(puzzle)
-    console.log('solution:', solution)
-    setSolving(false)
+    if (solving) return
+    if (!nodeRef.current) return
+    // setSolving(true)
+    const numCols = puzzle[0].length
+    const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
+    const solution = await worker.solve(puzzleCurrentState)
+    puzzleActions?.startSolutionPresentation(solution)
+    // setSolving(false)
   }
 
   const onCancel = () => {
