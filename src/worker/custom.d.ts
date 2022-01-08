@@ -2,7 +2,7 @@ declare module 'comlink-loader!*' {
 
   class WebpackWorker extends Worker {
     constructor()
-    processData(data: string): Promise<string>
+    solve(puzzle: number[][]): Promise<number[]>
   }
 
   export = WebpackWorker

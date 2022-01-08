@@ -1,13 +1,19 @@
 import * as Logic from "../logic"
 
-console.log('[worker.ts]', 'loaded')
+const extractMoves = (path: Logic.SlidingPuzzleNode[]): number[] => {
+  return path.slice(1).map(node => node.previousMove)
+}
 
-console.log(Logic.MOVE_UP)
-console.log(Logic.MOVE_DOWN)
-console.log(Logic.MOVE_LEFT)
-console.log(Logic.MOVE_RIGHT)
-
-export const processData = (data: string): string => {
-  console.log('[processData]', 'data:', data)
-  return data.toUpperCase()
+export const solve = (puzzle: number[][]): number[] | undefined => {
+  console.log('[solve]', 'puzzle:', puzzle)
+  const tiles = Logic.makeTiles(puzzle)
+  console.log('[solve]', 'tiles:', tiles)
+  const root = new Logic.SlidingPuzzleNode(tiles)
+  console.log('[solve]', 'root:', root)
+  const path = Logic.solve(root)
+  console.log('[solve]', 'path:', path)
+  if (!path) return undefined
+  const solution = extractMoves(path)
+  console.log('[solve]', 'solution:', solution)
+  return solution
 }

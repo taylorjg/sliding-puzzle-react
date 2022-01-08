@@ -27,7 +27,7 @@ class BoardScene extends Phaser.Scene {
   tileWidth = 0
   tileHeight = 0
   tiles: Phaser.GameObjects.Container[] = []
-  node?: Logic.MyNode
+  node?: Logic.SlidingPuzzleNode
 
   public constructor() {
     super("BoardScene")
@@ -114,7 +114,7 @@ class BoardScene extends Phaser.Scene {
     this.tileHeight = (height - (GUTTER * 2)) / this.numRows
 
     const tileRefs = Logic.makeTiles(puzzle)
-    this.node = new Logic.MyNode(tileRefs)
+    this.node = new Logic.SlidingPuzzleNode(tileRefs)
 
     for (const row of range(this.numRows)) {
       for (const col of range(this.numCols)) {

@@ -69,7 +69,7 @@ export const makeTiles = puzzle => {
 
 const copyTiles = tiles => tiles.map(Tile.copyTile)
 
-export class MyNode {
+export class SlidingPuzzleNode {
 
   constructor(tiles, previousMove) {
     this.boardManager = new BoardManager(tiles)
@@ -166,7 +166,7 @@ const manhattanDistance = (position1, position2) => {
 
 export const getChildOfNodeAndMove = (node, move) => {
   const newTiles = copyTiles(node.boardManager.tiles)
-  const childNode = new MyNode(newTiles, move)
+  const childNode = new SlidingPuzzleNode(newTiles, move)
   childNode.boardManager.makeMove(move)
   return childNode
 }
@@ -174,7 +174,7 @@ export const getChildOfNodeAndMove = (node, move) => {
 export const scrambleSolvedPuzzle = solvedPuzzle => {
   const NUM_MOVES = 50
   const tiles = makeTiles(solvedPuzzle)
-  let node = new MyNode(tiles)
+  let node = new SlidingPuzzleNode(tiles)
   for (const _ of range(NUM_MOVES)) {
     const possibleMoves = node.getPossibleMoves()
     const move = randomElement(possibleMoves)

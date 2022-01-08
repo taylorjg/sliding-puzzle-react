@@ -171,7 +171,7 @@ const ButtonsRow: React.FC<ButtonsRowProps> = ({
       {
         solving
           ? <button onClick={() => onCancel()}>Cancel</button>
-          : <button disabled onClick={() => onSolve()}>Solve</button>
+          : <button onClick={() => onSolve()}>Solve</button>
       }
     </PanelRow>
   )
@@ -204,7 +204,7 @@ const AnimationSpeedRow: React.FC<AnimationSpeedRowProps> = ({ solving }) => {
   )
 }
 
-const getSolvedPuzzle = (puzzleSize: string): Number[][] => {
+const getSolvedPuzzle = (puzzleSize: string): number[][] => {
   switch (puzzleSize) {
     case "3x3": return SOLVED_3x3
     case "4x4": return SOLVED_4x4
@@ -212,17 +212,11 @@ const getSolvedPuzzle = (puzzleSize: string): Number[][] => {
   }
 }
 
-const getScrambledPuzzle = (puzzleSize: string): Number[][] => {
+const getScrambledPuzzle = (puzzleSize: string): number[][] => {
   return scrambleSolvedPuzzle(getSolvedPuzzle(puzzleSize))
 }
 
-const workerInstance = new Worker()
-
-new Promise(async resolve => {
-  const processed = await workerInstance.processData("Hello")
-  console.log('processed:', processed)
-  resolve(processed)
-})
+const worker = new Worker()
 
 const App = () => {
 
@@ -263,8 +257,11 @@ const App = () => {
     setPuzzle(getScrambledPuzzle(puzzleSize))
   }
 
-  const onSolve = () => {
+  const onSolve = async () => {
     setSolving(true)
+    const solution = await worker.solve(puzzle)
+    console.log('solution:', solution)
+    setSolving(false)
   }
 
   const onCancel = () => {
