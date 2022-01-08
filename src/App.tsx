@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions } from "./game"
 import { scrambleSolvedPuzzle } from "./logic"
+import Worker from "./worker"
 import packageJson from "../package.json"
 
 const SOLVED_3x3 = [
@@ -212,6 +213,14 @@ const getSolvedPuzzle = (puzzleSize: string): Number[][] => {
 const getScrambledPuzzle = (puzzleSize: string): Number[][] => {
   return scrambleSolvedPuzzle(getSolvedPuzzle(puzzleSize))
 }
+
+const workerInstance = new Worker()
+
+new Promise(async resolve => {
+  const processed = await workerInstance.processData("Hello")
+  console.log('processed:', processed)
+  resolve(processed)
+})
 
 const App = () => {
 
