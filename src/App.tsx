@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions, BoardEventNames } from "./game"
 import * as Logic from "./logic"
-import Worker from "./worker"
 import packageJson from "../package.json"
 
 const SOLVED_3x3 = [
@@ -222,7 +221,7 @@ const getScrambledPuzzle = (puzzleSize: string): number[][] => {
   return Logic.scrambleSolvedPuzzle(getSolvedPuzzle(puzzleSize))
 }
 
-const worker = new Worker()
+const worker = new Worker(new URL('./worker/worker.ts', import.meta.url))
 
 const App = () => {
 
@@ -277,9 +276,11 @@ const App = () => {
     setSolving(true)
     const numCols = puzzle[0].length
     const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
-    const solution = await worker.solve(puzzleCurrentState)
-    if (solution) {
-      puzzleActions?.startSolutionPresentation(solution)
+    worker.postMessage({ puzzle: puzzleCurrentState })
+    worker.onmessage = ({ data: { solution } }) => {
+      if (solution) {
+        puzzleActions?.startSolutionPresentation(solution)
+      }
     }
   }
 
