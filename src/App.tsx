@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions, BoardEventNames } from "./game"
 import * as Logic from "./logic"
+import { useSolver } from "./useSolver"
 import packageJson from "../package.json"
 
 const SOLVED_3x3 = [
@@ -221,8 +222,6 @@ const getScrambledPuzzle = (puzzleSize: string): number[][] => {
   return Logic.scrambleSolvedPuzzle(getSolvedPuzzle(puzzleSize))
 }
 
-const worker = new Worker(new URL('./worker/worker.ts', import.meta.url))
-
 const App = () => {
 
   const nodeRef = useRef<Logic.SlidingPuzzleNode>()
@@ -231,6 +230,8 @@ const App = () => {
   const [moveCount, setMoveCount] = useState(0)
   const [solving, setSolving] = useState(false)
   const [puzzleActions, setPuzzleActions] = useState<PuzzleActions | undefined>(undefined)
+
+  const solve = useSolver()
 
   const onGameInitialised = (puzzleActions: PuzzleActions) => {
     setPuzzleActions(puzzleActions)
@@ -276,12 +277,11 @@ const App = () => {
     setSolving(true)
     const numCols = puzzle[0].length
     const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
-    worker.postMessage({ puzzle: puzzleCurrentState })
-    worker.onmessage = ({ data: { solution } }) => {
+    solve(puzzleCurrentState, solution => {
       if (solution) {
         puzzleActions?.startSolutionPresentation(solution)
       }
-    }
+    })
   }
 
   const onCancel = () => {
