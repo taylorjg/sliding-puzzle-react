@@ -53,7 +53,7 @@ class BoardScene extends Phaser.Scene {
     this.game.events.on(BoardActionNames.CancelSolutionPresentation, this.onCancelSolutionPresentation, this)
   }
 
-  private determineMove(blankTileRef: Logic.Tile, clickedRow: number, clickedCol: number) {
+  private determineMoveToMake(blankTileRef: Logic.Tile, clickedRow: number, clickedCol: number) {
 
     const possibleMoves = [
       { index: blankTileRef.upTileIndex, move: Logic.MOVE_UP },
@@ -78,7 +78,7 @@ class BoardScene extends Phaser.Scene {
     if (this.tweens.getAllTweens().length > 0) return
     const [clickedRow, clickedCol] = tile.getData(["row", "col"])
     const blankTileRef = this.node?.boardManager.blankTile
-    const move = this.determineMove(blankTileRef, clickedRow, clickedCol)
+    const move = this.determineMoveToMake(blankTileRef, clickedRow, clickedCol)
     if (move) {
       this.moveTile(tile, blankTileRef, move)
     }
@@ -93,18 +93,19 @@ class BoardScene extends Phaser.Scene {
   }
 
   private onStartSolutionPresentation(solution: number[]) {
-    console.log('[BoardScene#onStartSolutionPresentation]', 'solution:', solution)
     this.solution = solution
     this.presentNextSolutionMove()
   }
 
-  private determineTile = (blankTileRef: Logic.Tile, move: number) => {
+  private determineTileToMove = (blankTileRef: Logic.Tile, move: number) => {
+
     const moveOffsets = new Map([
       [Logic.MOVE_UP, [-1, 0]],
       [Logic.MOVE_DOWN, [1, 0]],
       [Logic.MOVE_LEFT, [0, -1]],
       [Logic.MOVE_RIGHT, [0, 1]]
     ])
+
     const moveOffset = moveOffsets.get(move)
     if (moveOffset) {
       const [blankRow, blankCol] = blankTileRef.position
@@ -123,7 +124,7 @@ class BoardScene extends Phaser.Scene {
     const move = this.solution?.shift()
     if (move) {
       const blankTileRef = this.node?.boardManager.blankTile
-      const tile = this.determineTile(blankTileRef, move)
+      const tile = this.determineTileToMove(blankTileRef, move)
       if (tile) {
         this.moveTile(tile, blankTileRef, move, () => this.presentNextSolutionMove())
       }
