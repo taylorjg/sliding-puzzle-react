@@ -2,6 +2,18 @@ import * as Phaser from "phaser"
 import * as Logic from "./logic"
 import { range } from "./logic/utils"
 
+enum BoardActionNames {
+  EnterReadonlyMode = "ENTER_READONLY_MODE",
+  ResetBoard = "RESET_BOARD",
+  StartSolutionPresentation = "START_SOLUTION_PRESENTATION",
+  CancelSolutionPresentation = "CANCEL_SOLUTION_PRESENTATION"
+}
+
+export enum BoardEventNames {
+  TileMoved = "TILE_MOVED",
+  FinishedPresentingSolution = "FINISHED_PRESENTING_SOLUTION"
+}
+
 export interface PuzzleActions {
   enterReadonlyMode: () => void
   resetBoard: (puzzle: Number[][]) => void
@@ -11,10 +23,10 @@ export interface PuzzleActions {
 
 export const makePuzzleActions = (game: Phaser.Game): PuzzleActions => {
   return {
-    enterReadonlyMode: () => game.events.emit("ENTER_READONLY_MODE"),
-    resetBoard: (puzzle: Number[][]) => game.events.emit("RESET_BOARD", puzzle),
-    startSolutionPresentation: (solution: Number[]) => game.events.emit("START_SOLUTION_PRESENTATION", solution),
-    cancelSolutionPresentation: () => game.events.emit("CANCEL_SOLUTION_PRESENTATION")
+    enterReadonlyMode: () => game.events.emit(BoardActionNames.EnterReadonlyMode),
+    resetBoard: (puzzle: Number[][]) => game.events.emit(BoardActionNames.ResetBoard, puzzle),
+    startSolutionPresentation: (solution: Number[]) => game.events.emit(BoardActionNames.StartSolutionPresentation, solution),
+    cancelSolutionPresentation: () => game.events.emit(BoardActionNames.CancelSolutionPresentation)
   }
 }
 
@@ -35,10 +47,10 @@ class BoardScene extends Phaser.Scene {
   }
 
   public create() {
-    this.game.events.on("ENTER_READONLY_MODE", this.onEnterReadonlyMode, this)
-    this.game.events.on("RESET_BOARD", this.onResetBoard, this)
-    this.game.events.on("START_SOLUTION_PRESENTATION", this.onStartSolutionPresentation, this)
-    this.game.events.on("CANCEL_SOLUTION_PRESENTATION", this.onCancelSolutionPresentation, this)
+    this.game.events.on(BoardActionNames.EnterReadonlyMode, this.onEnterReadonlyMode, this)
+    this.game.events.on(BoardActionNames.ResetBoard, this.onResetBoard, this)
+    this.game.events.on(BoardActionNames.StartSolutionPresentation, this.onStartSolutionPresentation, this)
+    this.game.events.on(BoardActionNames.CancelSolutionPresentation, this.onCancelSolutionPresentation, this)
   }
 
   private determineMove(blankTileRef: Logic.Tile, clickedRow: number, clickedCol: number) {
@@ -80,7 +92,7 @@ class BoardScene extends Phaser.Scene {
         onComplete: () => {
           tile.setData({ row: newRow, col: newCol })
           this.node = Logic.getChildOfNodeAndMove(this.node, move)
-          this.game.events.emit("TILE_MOVED", this.node)
+          this.game.events.emit(BoardEventNames.TileMoved, this.node)
         }
       })
     }
@@ -91,6 +103,7 @@ class BoardScene extends Phaser.Scene {
 
   private onResetBoard(puzzle: number[][]) {
     this.createTiles(puzzle)
+    this.solution = undefined
   }
 
   private onStartSolutionPresentation(solution: number[]) {
@@ -135,15 +148,18 @@ class BoardScene extends Phaser.Scene {
           onComplete: () => {
             tile.setData({ row: newRow, col: newCol })
             this.node = Logic.getChildOfNodeAndMove(this.node, move)
-            this.game.events.emit("TILE_MOVED", this.node)
+            this.game.events.emit(BoardEventNames.TileMoved, this.node)
             this.presentNextSolutionMove()
           }
         })
       }
+    } else {
+      this.game.events.emit(BoardEventNames.FinishedPresentingSolution)
     }
   }
 
   private onCancelSolutionPresentation() {
+    this.solution = undefined
   }
 
   private createTiles(puzzle: number[][]) {

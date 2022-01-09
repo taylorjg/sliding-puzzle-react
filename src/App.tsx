@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
-import { initGame, PuzzleActions, makePuzzleActions } from "./game"
+import { initGame, PuzzleActions, makePuzzleActions, BoardEventNames } from "./game"
 import * as Logic from "./logic"
 import Worker from "./worker"
 import packageJson from "../package.json"
@@ -85,13 +85,19 @@ const StyledPuzzle = styled.div.attrs({ id: "puzzle" })`
 interface PuzzleProps {
   onGameInitialised: (puzzleActions: PuzzleActions) => void
   onTileMoved: (node: Logic.SlidingPuzzleNode) => void
+  onFinishedPresentingSolution: () => void
 }
 
-const Puzzle: React.FC<PuzzleProps> = ({ onGameInitialised, onTileMoved }) => {
+const Puzzle: React.FC<PuzzleProps> = ({
+  onGameInitialised,
+  onTileMoved,
+  onFinishedPresentingSolution
+}) => {
 
   useEffect(() => {
     const game = initGame()
-    game.events.on("TILE_MOVED", onTileMoved)
+    game.events.on(BoardEventNames.TileMoved, onTileMoved)
+    game.events.on(BoardEventNames.FinishedPresentingSolution, onFinishedPresentingSolution)
     const puzzleActions = makePuzzleActions(game)
     onGameInitialised(puzzleActions)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -237,6 +243,10 @@ const App = () => {
     setMoveCount(currentMoveCount => currentMoveCount + 1)
   }
 
+  const onFinishedPresentingSolution = () => {
+    setSolving(false)
+  }
+
   const onChangePuzzleSize = (value: string) => {
     setPuzzleSize(value)
   }
@@ -249,30 +259,30 @@ const App = () => {
     const tiles = Logic.makeTiles(puzzle)
     nodeRef.current = new Logic.SlidingPuzzleNode(tiles)
     puzzleActions?.resetBoard(puzzle)
+    setMoveCount(0)
   }, [puzzle]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onReset = () => {
-    setMoveCount(0)
-    puzzleActions?.resetBoard(puzzle)
+    // Clone the current puzzle to trigger a rerender.
+    setPuzzle(puzzle.slice())
   }
 
   const onScramble = () => {
-    setMoveCount(0)
     setPuzzle(getScrambledPuzzle(puzzleSize))
   }
 
   const onSolve = async () => {
     if (solving) return
     if (!nodeRef.current) return
-    // setSolving(true)
+    setSolving(true)
     const numCols = puzzle[0].length
     const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
     const solution = await worker.solve(puzzleCurrentState)
     puzzleActions?.startSolutionPresentation(solution)
-    // setSolving(false)
   }
 
   const onCancel = () => {
+    puzzleActions?.cancelSolutionPresentation()
     setSolving(false)
   }
 
@@ -282,7 +292,11 @@ const App = () => {
         <Panel1>
           <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
           <PuzzleWrapper>
-            <Puzzle onGameInitialised={onGameInitialised} onTileMoved={onTileMoved} />
+            <Puzzle
+              onGameInitialised={onGameInitialised}
+              onTileMoved={onTileMoved}
+              onFinishedPresentingSolution={onFinishedPresentingSolution}
+            />
           </PuzzleWrapper>
         </Panel1>
         <Panel2>
