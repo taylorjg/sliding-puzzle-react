@@ -25,7 +25,9 @@ comlink.ts:265 Uncaught (in promise) TypeError: Cannot read properties of undefi
 I noticed that there was a missing peer dependency:
 
 ```
-(TODO)
+$ npm ls --depth 0
+...
+npm ERR! peer dep missing: webpack@^3.0.0 || ^4.0.0-alpha.0 || ^4.0.0, required by worker-loader@2.0.0
 ```
 
 It seems that my project, created using [Create React App](https://create-react-app.dev/),
