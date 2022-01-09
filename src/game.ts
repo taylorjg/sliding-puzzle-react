@@ -80,21 +80,7 @@ class BoardScene extends Phaser.Scene {
     const blankTileRef = this.node?.boardManager.blankTile
     const move = this.determineMove(blankTileRef, clickedRow, clickedCol)
     if (move) {
-      const [newRow, newCol] = blankTileRef.position
-      const x = GUTTER + newCol * this.tileWidth + this.tileWidth / 2
-      const y = GUTTER + newRow * this.tileHeight + this.tileHeight / 2
-      this.tweens.add({
-        targets: tile,
-        duration: 250,
-        ease: 'Sine.InOut',
-        x,
-        y,
-        onComplete: () => {
-          tile.setData({ row: newRow, col: newCol })
-          this.node = Logic.getChildOfNodeAndMove(this.node, move)
-          this.game.events.emit(BoardEventNames.TileMoved, this.node)
-        }
-      })
+      this.moveTile(tile, blankTileRef, move)
     }
   }
 
@@ -112,50 +98,62 @@ class BoardScene extends Phaser.Scene {
     this.presentNextSolutionMove()
   }
 
+  private determineTile = (blankTileRef: Logic.Tile, move: number) => {
+    const moveOffsets = new Map([
+      [Logic.MOVE_UP, [-1, 0]],
+      [Logic.MOVE_DOWN, [1, 0]],
+      [Logic.MOVE_LEFT, [0, -1]],
+      [Logic.MOVE_RIGHT, [0, 1]]
+    ])
+    const moveOffset = moveOffsets.get(move)
+    if (moveOffset) {
+      const [blankRow, blankCol] = blankTileRef.position
+      const [rowOffset, colOffset] = moveOffset
+      const targetRow = blankRow + rowOffset
+      const targetCol = blankCol + colOffset
+      return this.tiles.find(tile => {
+        const [row, col] = tile.getData(["row", "col"])
+        return row === targetRow && col === targetCol
+      })
+    }
+    return undefined
+  }
+
   private presentNextSolutionMove() {
     const move = this.solution?.shift()
     if (move) {
       const blankTileRef = this.node?.boardManager.blankTile
-      let tileRef: Logic.Tile
-      switch (move) {
-        case Logic.MOVE_UP:
-          tileRef = this.node?.boardManager.tiles[blankTileRef.upTileIndex]
-          break
-        case Logic.MOVE_DOWN:
-          tileRef = this.node?.boardManager.tiles[blankTileRef.downTileIndex]
-          break
-        case Logic.MOVE_LEFT:
-          tileRef = this.node?.boardManager.tiles[blankTileRef.leftTileIndex]
-          break
-        case Logic.MOVE_RIGHT:
-          tileRef = this.node?.boardManager.tiles[blankTileRef.rightTileIndex]
-          break
-      }
-      const tile = this.tiles.find(tile => {
-        const [row, col] = tile.getData(["row", "col"])
-        return row === tileRef.position[0] && col === tileRef.position[1]
-      })
+      const tile = this.determineTile(blankTileRef, move)
       if (tile) {
-        const [newRow, newCol] = blankTileRef.position
-        const x = GUTTER + newCol * this.tileWidth + this.tileWidth / 2
-        const y = GUTTER + newRow * this.tileHeight + this.tileHeight / 2
-        this.tweens.add({
-          targets: tile,
-          duration: 250,
-          ease: 'Sine.InOut',
-          x,
-          y,
-          onComplete: () => {
-            tile.setData({ row: newRow, col: newCol })
-            this.node = Logic.getChildOfNodeAndMove(this.node, move)
-            this.game.events.emit(BoardEventNames.TileMoved, this.node)
-            this.presentNextSolutionMove()
-          }
-        })
+        this.moveTile(tile, blankTileRef, move, () => this.presentNextSolutionMove())
       }
     } else {
       this.game.events.emit(BoardEventNames.FinishedPresentingSolution)
     }
+  }
+
+  private moveTile(
+    tile: Phaser.GameObjects.Container,
+    blankTileRef: Logic.Tile,
+    move: number,
+    cb?: () => void
+  ) {
+    const [row, col] = blankTileRef.position
+    const x = GUTTER + col * this.tileWidth + this.tileWidth / 2
+    const y = GUTTER + row * this.tileHeight + this.tileHeight / 2
+    this.tweens.add({
+      targets: tile,
+      duration: 250,
+      ease: 'Sine.InOut',
+      x,
+      y,
+      onComplete: () => {
+        tile.setData({ row, col })
+        this.node = Logic.getChildOfNodeAndMove(this.node, move)
+        this.game.events.emit(BoardEventNames.TileMoved, this.node)
+        cb?.()
+      }
+    })
   }
 
   private onCancelSolutionPresentation() {
