@@ -278,7 +278,9 @@ const App = () => {
     const numCols = puzzle[0].length
     const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
     const solution = await worker.solve(puzzleCurrentState)
-    puzzleActions?.startSolutionPresentation(solution)
+    if (solution) {
+      puzzleActions?.startSolutionPresentation(solution)
+    }
   }
 
   const onCancel = () => {

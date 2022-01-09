@@ -4,7 +4,7 @@ const extractMoves = (path: Logic.SlidingPuzzleNode[]): number[] => {
   return path.slice(1).map(node => node.previousMove)
 }
 
-export const solve = (puzzle: number[][]): number[] | undefined => {
+export const solve = async (puzzle: number[][]): Promise<number[] | undefined> => {
   const tiles = Logic.makeTiles(puzzle)
   const root = new Logic.SlidingPuzzleNode(tiles)
   const path = Logic.solve(root)

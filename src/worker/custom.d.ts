@@ -2,7 +2,7 @@ declare module 'comlink-loader!*' {
 
   class WebpackWorker extends Worker {
     constructor()
-    solve(puzzle: number[][]): Promise<number[]>
+    async solve(puzzle: number[][]): Promise<number[] | undefined>
   }
 
   export = WebpackWorker
