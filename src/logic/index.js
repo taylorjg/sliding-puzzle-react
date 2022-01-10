@@ -189,7 +189,7 @@ export const scrambleSolvedPuzzle = solvedPuzzle => {
   return puzzleFromNode(node, numCols)
 }
 
-export const solve = node => {
+export const solve = async (node, checkForCancellation) => {
 
   const h = node => node.getCost()
   const isGoal = node => node.isSolution
@@ -200,7 +200,7 @@ export const solve = node => {
   }
   const stepCost = (_node, _succ) => 1
 
-  const ida_star = configure_ida_star(h, isGoal, isNodeInPath, successors, stepCost)
-  const result = ida_star(node)
+  const ida_star = configure_ida_star(h, isGoal, isNodeInPath, successors, stepCost, checkForCancellation)
+  const result = await ida_star(node, checkForCancellation)
   return result?.path
 }

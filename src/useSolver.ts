@@ -14,16 +14,16 @@ export const useSolver = () => {
 
   const solve = (puzzle: number[][], onComplete: (solution: number[] | undefined) => void) => {
     const worker = getworker()
-    worker.postMessage({ type: "solve", payload: puzzle })
-    worker.onmessage = (messageEvent: MessageEvent<number[] | undefined>) => {
-      const solution = messageEvent.data
+    worker.postMessage({ type: "solve", puzzle })
+    worker.onmessage = (ev: MessageEvent<number[] | undefined>) => {
+      const solution = ev.data
       onComplete(solution)
     }
   }
 
   const cancel = () => {
     const worker = getworker()
-    worker.postMessage({ type: "cancel", payload: {} })
+    worker.postMessage({ type: "cancel" })
   }
 
   return { solve, cancel }
