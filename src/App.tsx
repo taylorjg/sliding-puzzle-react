@@ -231,7 +231,7 @@ const App = () => {
   const [solving, setSolving] = useState(false)
   const [puzzleActions, setPuzzleActions] = useState<PuzzleActions | undefined>(undefined)
 
-  const solve = useSolver()
+  const solver = useSolver()
 
   const onGameInitialised = (puzzleActions: PuzzleActions) => {
     setPuzzleActions(puzzleActions)
@@ -277,7 +277,7 @@ const App = () => {
     setSolving(true)
     const numCols = puzzle[0].length
     const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
-    solve(puzzleCurrentState, solution => {
+    solver.solve(puzzleCurrentState, solution => {
       if (solution) {
         puzzleActions?.startSolutionPresentation(solution)
       }
@@ -285,6 +285,7 @@ const App = () => {
   }
 
   const onCancel = () => {
+    solver.cancel()
     puzzleActions?.cancelSolutionPresentation()
     setSolving(false)
   }

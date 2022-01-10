@@ -10,10 +10,21 @@ const extractMoves = (path: Logic.SlidingPuzzleNode[]): number[] => {
   return path.slice(1).map(node => node.previousMove)
 }
 
-self.onmessage = ({ data: { puzzle } }) => {
+const onSolve = (puzzle: number[][]) => {
   const tiles = Logic.makeTiles(puzzle)
   const root = new Logic.SlidingPuzzleNode(tiles)
   const path = Logic.solve(root)
   const solution = path ? extractMoves(path) : undefined
-  self.postMessage({ solution })
+  self.postMessage(solution)
+}
+
+const onCancel = () => {
+  // TODO
+}
+
+self.onmessage = ({ data: { type, payload } }) => {
+  switch (type) {
+    case "solve": return onSolve(payload)
+    case "cancel": return onCancel()
+  }
 }
