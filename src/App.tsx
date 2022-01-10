@@ -275,9 +275,11 @@ const App = () => {
     if (solving) return
     if (!nodeRef.current) return
     setSolving(true)
+    puzzleActions?.showOverlay()
     const numCols = puzzle[0].length
     const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
     solver.solve(puzzleCurrentState, solution => {
+      puzzleActions?.hideOverlay()
       if (solution) {
         puzzleActions?.startSolutionPresentation(solution)
       }
@@ -286,6 +288,7 @@ const App = () => {
 
   const onCancel = () => {
     solver.cancel()
+    puzzleActions?.hideOverlay()
     puzzleActions?.cancelSolutionPresentation()
     setSolving(false)
   }

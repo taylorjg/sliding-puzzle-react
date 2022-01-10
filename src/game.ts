@@ -3,19 +3,21 @@ import * as Logic from "./logic"
 import { range } from "./logic/utils"
 
 enum BoardActionNames {
-  EnterReadonlyMode = "ENTER_READONLY_MODE",
-  ResetBoard = "RESET_BOARD",
-  StartSolutionPresentation = "START_SOLUTION_PRESENTATION",
-  CancelSolutionPresentation = "CANCEL_SOLUTION_PRESENTATION"
+  ShowOverlay = "ShowOverlay",
+  HideOverlay = "HideOverlay",
+  ResetBoard = "ResetBoard",
+  StartSolutionPresentation = "StartSolutionPresentation",
+  CancelSolutionPresentation = "CancelSolutionPresentation"
 }
 
 export enum BoardEventNames {
-  TileMoved = "TILE_MOVED",
-  FinishedPresentingSolution = "FINISHED_PRESENTING_SOLUTION"
+  TileMoved = "TileMoved",
+  FinishedPresentingSolution = "FinishedPresentingSolution"
 }
 
 export interface PuzzleActions {
-  enterReadonlyMode: () => void
+  showOverlay: () => void
+  hideOverlay: () => void
   resetBoard: (puzzle: Number[][]) => void
   startSolutionPresentation: (solution: Number[]) => void
   cancelSolutionPresentation: () => void
@@ -23,7 +25,8 @@ export interface PuzzleActions {
 
 export const makePuzzleActions = (game: Phaser.Game): PuzzleActions => {
   return {
-    enterReadonlyMode: () => game.events.emit(BoardActionNames.EnterReadonlyMode),
+    showOverlay: () => game.events.emit(BoardActionNames.ShowOverlay),
+    hideOverlay: () => game.events.emit(BoardActionNames.HideOverlay),
     resetBoard: (puzzle: Number[][]) => game.events.emit(BoardActionNames.ResetBoard, puzzle),
     startSolutionPresentation: (solution: Number[]) => game.events.emit(BoardActionNames.StartSolutionPresentation, solution),
     cancelSolutionPresentation: () => game.events.emit(BoardActionNames.CancelSolutionPresentation)
@@ -39,6 +42,7 @@ class BoardScene extends Phaser.Scene {
   tileWidth = 0
   tileHeight = 0
   tiles: Phaser.GameObjects.Container[] = []
+  overlay?: Phaser.GameObjects.Rectangle
   node?: Logic.SlidingPuzzleNode
   solution?: number[]
 
@@ -47,7 +51,8 @@ class BoardScene extends Phaser.Scene {
   }
 
   public create() {
-    this.game.events.on(BoardActionNames.EnterReadonlyMode, this.onEnterReadonlyMode, this)
+    this.game.events.on(BoardActionNames.ShowOverlay, this.onShowOverlay, this)
+    this.game.events.on(BoardActionNames.HideOverlay, this.onHideOverlay, this)
     this.game.events.on(BoardActionNames.ResetBoard, this.onResetBoard, this)
     this.game.events.on(BoardActionNames.StartSolutionPresentation, this.onStartSolutionPresentation, this)
     this.game.events.on(BoardActionNames.CancelSolutionPresentation, this.onCancelSolutionPresentation, this)
@@ -84,7 +89,18 @@ class BoardScene extends Phaser.Scene {
     }
   }
 
-  private onEnterReadonlyMode() {
+  private onShowOverlay() {
+    const { width, height } = this.sys.game.canvas
+    this.overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.5)
+      .setOrigin(0, 0)
+      .setDepth(1)
+    this.add.existing(this.overlay)
+  }
+
+  private onHideOverlay() {
+    if (this.overlay) {
+      this.overlay.destroy(true)
+    }
   }
 
   private onResetBoard(puzzle: number[][]) {
