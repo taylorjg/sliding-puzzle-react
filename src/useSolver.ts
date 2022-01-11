@@ -4,7 +4,7 @@ export const useSolver = () => {
 
   const workerRef = useRef<Worker>()
 
-  const getworker = () => {
+  const getWorker = () => {
     if (!workerRef.current) {
       const worker = new Worker(new URL('./worker/worker.ts', import.meta.url))
       workerRef.current = worker
@@ -13,7 +13,7 @@ export const useSolver = () => {
   }
 
   const solve = (puzzle: number[][], onComplete: (solution: number[] | undefined) => void) => {
-    const worker = getworker()
+    const worker = getWorker()
     worker.postMessage({ type: "solve", puzzle })
     worker.onmessage = (ev: MessageEvent<number[] | undefined>) => {
       const solution = ev.data
@@ -22,7 +22,7 @@ export const useSolver = () => {
   }
 
   const cancel = () => {
-    const worker = getworker()
+    const worker = getWorker()
     worker.postMessage({ type: "cancel" })
   }
 

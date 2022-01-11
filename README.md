@@ -48,7 +48,7 @@ So I removed [comlink-loader](https://www.npmjs.com/package/comlink-loader)
 and changed my implementation to something more basic
 (using [postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage) and
 [onmessage](https://developer.mozilla.org/en-US/docs/Web/API/Worker/onmessage)) and it all works fine now.
-I then created a custom hook to wrap the mechanics of communicating with the web worker.
+I then created a [custom hook](src/useSolver.ts) to wrap the mechanics of communicating with the web worker.
 
 # TODO
 
