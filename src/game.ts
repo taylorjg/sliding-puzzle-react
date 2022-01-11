@@ -1,4 +1,5 @@
 import * as Phaser from "phaser"
+import { ThemeConsumer } from "styled-components"
 import * as Logic from "./logic"
 import { range } from "./logic/utils"
 
@@ -33,6 +34,11 @@ export const makePuzzleActions = (game: Phaser.Game): PuzzleActions => {
   }
 }
 
+const ANTIQUE_WHITE = 0xFAEBD7
+const FIREBRICK = 0xB22222
+const GOLD = 0xFFD700
+const BLACK = 0x000000
+
 const GUTTER = 10
 
 class BoardScene extends Phaser.Scene {
@@ -43,6 +49,8 @@ class BoardScene extends Phaser.Scene {
   tileHeight = 0
   tiles: Phaser.GameObjects.Container[] = []
   overlay?: Phaser.GameObjects.Rectangle
+  rotatingTile?: Phaser.GameObjects.Container
+  timerEvent?: Phaser.Time.TimerEvent
   node?: Logic.SlidingPuzzleNode
   solution?: number[]
 
@@ -90,16 +98,62 @@ class BoardScene extends Phaser.Scene {
   }
 
   private onShowOverlay() {
+
     const { width, height } = this.sys.game.canvas
-    this.overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.5)
+
+    this.overlay = this.add.rectangle(0, 0, width, height, BLACK, 0.6)
       .setOrigin(0, 0)
       .setDepth(1)
     this.add.existing(this.overlay)
+
+    this.timerEvent = this.time.delayedCall(500, () => {
+      const cx = width / 2
+      const cy = height / 2
+      const rectangle = this.add.rectangle(0, 0, this.tileWidth, this.tileHeight, FIREBRICK)
+      const textStyle = {
+        fontSize: this.numRows === 4 ? "48px" : "64px",
+        color: `#${GOLD.toString(16)}`
+      }
+      const values = range(this.numRows * this.numCols).slice(1)
+      const text = this.add.text(0, 0, values[0].toString(), textStyle).setOrigin(0.5)
+      text.setData("valueIndex", 0)
+      this.rotatingTile = this.add.container(cx, cy, [rectangle, text]).setDepth(2)
+      this.add.existing(this.rotatingTile)
+      this.tweens.add({
+        targets: this.rotatingTile,
+        duration: 1000,
+        ease: "Sine.InOut",
+        angle: { from: 0, to: 360 },
+        scale: 0,
+        hold: 100,
+        yoyo: true,
+        loop: -1,
+        loopDelay: 100,
+        onLoop: () => {
+          const valueIndex = text.getData("valueIndex")
+          const nextValueIndex = (valueIndex + 1) % values.length
+          const value = values[nextValueIndex]
+          text.setText(value.toString())
+          text.setData("valueIndex", nextValueIndex)
+          const row = Math.floor(nextValueIndex / this.numCols)
+          const col = nextValueIndex % this.numCols
+          rectangle.fillColor = (row + col) % 2 ? ANTIQUE_WHITE : FIREBRICK
+        }
+      })
+    }, undefined, this)
   }
 
   private onHideOverlay() {
+    if (this.timerEvent) {
+      this.timerEvent.destroy()
+      this.timerEvent = undefined
+    }
     if (this.overlay) {
       this.overlay.destroy(true)
+    }
+    if (this.rotatingTile) {
+      this.tweens.killTweensOf(this.rotatingTile)
+      this.rotatingTile.destroy(true)
     }
   }
 
@@ -161,7 +215,7 @@ class BoardScene extends Phaser.Scene {
     this.tweens.add({
       targets: tile,
       duration: 250,
-      ease: 'Sine.InOut',
+      ease: "Sine.InOut",
       x,
       y,
       onComplete: () => {
@@ -202,15 +256,13 @@ class BoardScene extends Phaser.Scene {
 
         const goalValueTileRef = tileRefs.find(tileRef => tileRef.goalValue === value)
         const [goalValueRow, goalValueCol] = goalValueTileRef?.position
-        const colour = (goalValueRow + goalValueCol) % 2
-          ? 0xFAEBD7 // AntiqueWhite
-          : 0xB22222 // Firebrick
+        const colour = (goalValueRow + goalValueCol) % 2 ? ANTIQUE_WHITE : FIREBRICK
         const rectangle = this.add.rectangle(0, 0, this.tileWidth, this.tileHeight, colour)
         rectangle.setScale(0.98)
 
         const textStyle = {
           fontSize: this.numRows === 4 ? "48px" : "64px",
-          color: "#FFD700" // Gold
+          color: `#${GOLD.toString(16)}`
         }
         const text = this.add.text(0, 0, value.toString(), textStyle).setOrigin(0.5)
 
