@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions, BoardEventNames } from "./game"
 import * as Logic from "./logic"
@@ -96,10 +96,10 @@ const Puzzle: React.FC<PuzzleProps> = ({
 
   useEffect(() => {
     const game = initGame()
+    const puzzleActions = makePuzzleActions(game)
+    game.events.on(BoardEventNames.GameInitialised, () => onGameInitialised(puzzleActions))
     game.events.on(BoardEventNames.TileMoved, onTileMoved)
     game.events.on(BoardEventNames.FinishedPresentingSolution, onFinishedPresentingSolution)
-    const puzzleActions = makePuzzleActions(game)
-    onGameInitialised(puzzleActions)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -135,10 +135,6 @@ const PanelRow = styled.div`
   margin-bottom: .5rem;
 `
 
-const HideablePanelRow = styled(PanelRow) <{ hidden: boolean }>`
-  visibility: ${props => props.hidden ? "hidden" : "visible"};
-`
-
 interface MoveCountRowProps {
   moveCount: number
 }
@@ -155,6 +151,7 @@ const MoveCountRow: React.FC<MoveCountRowProps> = ({ moveCount }) => {
 
 interface ButtonsRowProps {
   solving: boolean
+  solved: boolean
   onReset: () => void
   onScramble: () => void
   onSolve: () => void
@@ -163,6 +160,7 @@ interface ButtonsRowProps {
 
 const ButtonsRow: React.FC<ButtonsRowProps> = ({
   solving,
+  solved,
   onReset,
   onScramble,
   onSolve,
@@ -177,36 +175,9 @@ const ButtonsRow: React.FC<ButtonsRowProps> = ({
       {
         solving
           ? <button onClick={() => onCancel()}>Cancel</button>
-          : <button onClick={() => onSolve()}>Solve</button>
+          : <button disabled={solved} onClick={() => onSolve()}>Solve</button>
       }
     </PanelRow>
-  )
-}
-
-interface AnimationSpeedRowProps {
-  solving: boolean
-}
-
-const AnimationSpeedRow: React.FC<AnimationSpeedRowProps> = ({ solving }) => {
-  return (
-    <HideablePanelRow hidden={!solving}>
-      <span>Animation speed:</span>
-      &nbsp;
-      <input type="range" min="0" max="1" step="0.1" list="tickmarks" defaultValue="0.2" />
-      <datalist id="tickmarks">
-        <option value="0.0"></option>
-        <option value="0.1"></option>
-        <option value="0.2"></option>
-        <option value="0.3"></option>
-        <option value="0.4"></option>
-        <option value="0.5"></option>
-        <option value="0.6"></option>
-        <option value="0.7"></option>
-        <option value="0.8"></option>
-        <option value="0.9"></option>
-        <option value="1.0"></option>
-      </datalist>
-    </HideablePanelRow>
   )
 }
 
@@ -224,9 +195,9 @@ const getScrambledPuzzle = (puzzleSize: string): number[][] => {
 
 const App = () => {
 
-  const nodeRef = useRef<Logic.SlidingPuzzleNode>()
   const [puzzleSize, setPuzzleSize] = useState("4x4")
   const [puzzle, setPuzzle] = useState(getSolvedPuzzle(puzzleSize))
+  const [node, setNode] = useState<Logic.SlidingPuzzleNode>()
   const [moveCount, setMoveCount] = useState(0)
   const [solving, setSolving] = useState(false)
   const [puzzleActions, setPuzzleActions] = useState<PuzzleActions | undefined>(undefined)
@@ -239,7 +210,7 @@ const App = () => {
   }
 
   const onTileMoved = (node: Logic.SlidingPuzzleNode) => {
-    nodeRef.current = node
+    setNode(node)
     setMoveCount(currentMoveCount => currentMoveCount + 1)
   }
 
@@ -257,7 +228,7 @@ const App = () => {
 
   useEffect(() => {
     const tiles = Logic.makeTiles(puzzle)
-    nodeRef.current = new Logic.SlidingPuzzleNode(tiles)
+    setNode(new Logic.SlidingPuzzleNode(tiles))
     puzzleActions?.resetBoard(puzzle)
     setMoveCount(0)
   }, [puzzle]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -273,11 +244,11 @@ const App = () => {
 
   const onSolve = async () => {
     if (solving) return
-    if (!nodeRef.current) return
+    if (!node) return
     setSolving(true)
     puzzleActions?.showOverlay()
     const numCols = puzzle[0].length
-    const puzzleCurrentState = Logic.puzzleFromNode(nodeRef.current, numCols)
+    const puzzleCurrentState = Logic.puzzleFromNode(node, numCols)
     solver.solve(puzzleCurrentState, solution => {
       puzzleActions?.hideOverlay()
       if (solution) {
@@ -310,12 +281,12 @@ const App = () => {
           <MoveCountRow moveCount={moveCount} />
           <ButtonsRow
             solving={solving}
+            solved={node?.isSolution}
             onReset={onReset}
             onScramble={onScramble}
             onSolve={onSolve}
             onCancel={onCancel}
           />
-          <AnimationSpeedRow solving={solving} />
         </Panel2>
       </MainContent>
       <Version>version: {packageJson.version}</Version>

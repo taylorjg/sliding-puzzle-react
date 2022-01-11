@@ -52,9 +52,9 @@ I then created a custom hook to wrap the mechanics of communicating with the web
 
 # TODO
 
-* Add an overlay/spinner over the board whilst the web worker is trying to find a solution
-* Implement cancellation of the web worker
-* Implement variable animation speed
+* ~~Add an overlay/animation over the board whilst the web worker is trying to find a solution~~
+* ~~Implement cancellation of the web worker~~
+* Use [MUI](https://mui.com/) components
 * Add sound effects
 
 # Links

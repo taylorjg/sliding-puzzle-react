@@ -1,5 +1,4 @@
 import * as Phaser from "phaser"
-import { ThemeConsumer } from "styled-components"
 import * as Logic from "./logic"
 import { range } from "./logic/utils"
 
@@ -12,6 +11,7 @@ enum BoardActionNames {
 }
 
 export enum BoardEventNames {
+  GameInitialised = "GameInitialised",
   TileMoved = "TileMoved",
   FinishedPresentingSolution = "FinishedPresentingSolution"
 }
@@ -19,8 +19,8 @@ export enum BoardEventNames {
 export interface PuzzleActions {
   showOverlay: () => void
   hideOverlay: () => void
-  resetBoard: (puzzle: Number[][]) => void
-  startSolutionPresentation: (solution: Number[]) => void
+  resetBoard: (puzzle: number[][]) => void
+  startSolutionPresentation: (solution: number[]) => void
   cancelSolutionPresentation: () => void
 }
 
@@ -28,11 +28,13 @@ export const makePuzzleActions = (game: Phaser.Game): PuzzleActions => {
   return {
     showOverlay: () => game.events.emit(BoardActionNames.ShowOverlay),
     hideOverlay: () => game.events.emit(BoardActionNames.HideOverlay),
-    resetBoard: (puzzle: Number[][]) => game.events.emit(BoardActionNames.ResetBoard, puzzle),
-    startSolutionPresentation: (solution: Number[]) => game.events.emit(BoardActionNames.StartSolutionPresentation, solution),
+    resetBoard: (puzzle: number[][]) => game.events.emit(BoardActionNames.ResetBoard, puzzle),
+    startSolutionPresentation: (solution: number[]) => game.events.emit(BoardActionNames.StartSolutionPresentation, solution),
     cancelSolutionPresentation: () => game.events.emit(BoardActionNames.CancelSolutionPresentation)
   }
 }
+
+const colourNumberToString = (colourNumber: number): string => `#${colourNumber.toString(16)}`
 
 const ANTIQUE_WHITE = 0xFAEBD7
 const FIREBRICK = 0xB22222
@@ -64,6 +66,8 @@ class BoardScene extends Phaser.Scene {
     this.game.events.on(BoardActionNames.ResetBoard, this.onResetBoard, this)
     this.game.events.on(BoardActionNames.StartSolutionPresentation, this.onStartSolutionPresentation, this)
     this.game.events.on(BoardActionNames.CancelSolutionPresentation, this.onCancelSolutionPresentation, this)
+
+    this.game.events.emit(BoardEventNames.GameInitialised)
   }
 
   private determineMoveToMake(blankTileRef: Logic.Tile, clickedRow: number, clickedCol: number) {
@@ -112,7 +116,7 @@ class BoardScene extends Phaser.Scene {
       const rectangle = this.add.rectangle(0, 0, this.tileWidth, this.tileHeight, FIREBRICK)
       const textStyle = {
         fontSize: this.numRows === 4 ? "48px" : "64px",
-        color: `#${GOLD.toString(16)}`
+        color: colourNumberToString(GOLD)
       }
       const values = range(this.numRows * this.numCols).slice(1)
       const text = this.add.text(0, 0, values[0].toString(), textStyle).setOrigin(0.5)
@@ -123,12 +127,12 @@ class BoardScene extends Phaser.Scene {
         targets: this.rotatingTile,
         duration: 1000,
         ease: "Sine.InOut",
-        angle: { from: 0, to: 360 },
+        angle: 180,
         scale: 0,
-        hold: 100,
+        hold: 200,
         yoyo: true,
         loop: -1,
-        loopDelay: 100,
+        loopDelay: 400,
         onLoop: () => {
           const valueIndex = text.getData("valueIndex")
           const nextValueIndex = (valueIndex + 1) % values.length
@@ -262,7 +266,7 @@ class BoardScene extends Phaser.Scene {
 
         const textStyle = {
           fontSize: this.numRows === 4 ? "48px" : "64px",
-          color: `#${GOLD.toString(16)}`
+          color: colourNumberToString(GOLD)
         }
         const text = this.add.text(0, 0, value.toString(), textStyle).setOrigin(0.5)
 
