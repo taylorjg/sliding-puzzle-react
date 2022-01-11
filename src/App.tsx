@@ -48,16 +48,17 @@ const MainContent = styled.div`
 `
 
 interface PuzzleSizeRowProps {
+  solving: boolean
   puzzleSize: string;
   onChangePuzzleSize: (value: string) => void;
 }
 
-const PuzzleSizeRow: React.FC<PuzzleSizeRowProps> = ({ puzzleSize, onChangePuzzleSize }) => {
+const PuzzleSizeRow: React.FC<PuzzleSizeRowProps> = ({ solving, puzzleSize, onChangePuzzleSize }) => {
   return (
     <div>
       <span>Puzzle size:</span>
       &nbsp;
-      <select value={puzzleSize} onChange={e => onChangePuzzleSize(e.target.value)}>
+      <select disabled={solving} value={puzzleSize} onChange={e => onChangePuzzleSize(e.target.value)}>
         <option value="3x3">3 x 3</option>
         <option value="4x4">4 x 4</option>
       </select>
@@ -268,7 +269,7 @@ const App = () => {
     <>
       <MainContent>
         <Panel1>
-          <PuzzleSizeRow puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
+          <PuzzleSizeRow solving={solving} puzzleSize={puzzleSize} onChangePuzzleSize={onChangePuzzleSize} />
           <PuzzleWrapper>
             <Puzzle
               onGameInitialised={onGameInitialised}

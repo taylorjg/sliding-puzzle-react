@@ -113,7 +113,10 @@ class BoardScene extends Phaser.Scene {
     this.timerEvent = this.time.delayedCall(500, () => {
       const cx = width / 2
       const cy = height / 2
-      const rectangle = this.add.rectangle(0, 0, this.tileWidth, this.tileHeight, FIREBRICK)
+      const biggerTileWidth = this.tileWidth * 1.2
+      const biggerTileHeight = this.tileHeight * 1.2
+      const tileBackground = this.add.rectangle(0, 0, biggerTileWidth, biggerTileHeight, BLACK)
+      const tileFace = this.add.rectangle(0, 0, biggerTileWidth, biggerTileHeight, FIREBRICK).setScale(0.98)
       const textStyle = {
         fontSize: this.numRows === 4 ? "48px" : "64px",
         color: colourNumberToString(GOLD)
@@ -121,7 +124,7 @@ class BoardScene extends Phaser.Scene {
       const values = range(this.numRows * this.numCols).slice(1)
       const text = this.add.text(0, 0, values[0].toString(), textStyle).setOrigin(0.5)
       text.setData("valueIndex", 0)
-      this.rotatingTile = this.add.container(cx, cy, [rectangle, text]).setDepth(2)
+      this.rotatingTile = this.add.container(cx, cy, [tileBackground, tileFace, text]).setDepth(2)
       this.add.existing(this.rotatingTile)
       this.tweens.add({
         targets: this.rotatingTile,
@@ -141,7 +144,7 @@ class BoardScene extends Phaser.Scene {
           text.setData("valueIndex", nextValueIndex)
           const row = Math.floor(nextValueIndex / this.numCols)
           const col = nextValueIndex % this.numCols
-          rectangle.fillColor = (row + col) % 2 ? ANTIQUE_WHITE : FIREBRICK
+          tileFace.fillColor = (row + col) % 2 ? ANTIQUE_WHITE : FIREBRICK
         }
       })
     }, undefined, this)

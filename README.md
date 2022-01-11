@@ -54,7 +54,6 @@ I then created a [custom hook](src/useSolver.ts) to wrap the mechanics of commun
 
 * ~~Add an overlay/animation over the board whilst the web worker is trying to find a solution~~
 * ~~Implement cancellation of the web worker~~
-* Use [MUI](https://mui.com/) components
 * Add sound effects
 
 # Links
