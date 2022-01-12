@@ -26,6 +26,42 @@ const Version = styled.div`
   font-style: italic;
 `
 
+const Span = styled.span`
+  color: #B22222;
+`
+
+const Button = styled.button.attrs<{ disabled: boolean }>(props => ({
+  disabled: props.disabled
+}))`
+  cursor: pointer;
+  font-size: 1rem;
+  padding: .25rem .5rem;
+  border: .15rem #000000 solid;
+  border-radius: 0.5rem;
+  background-color: #B22222;
+  color: #FFD700;
+  &:hover:not(:disabled),
+  &:active:not(:disabled),
+  &:focus {
+    color: #FAEBD7;
+  }
+  &:disabled {
+    opacity: 0.7;
+  }
+`
+
+const Select = styled.select.attrs<{ disabled: boolean }>(props => ({
+  disabled: props.disabled
+}))`
+  cursor: pointer;
+  font-size: 1rem;
+  padding: .25rem .5rem;
+  border: .15rem #000000 solid;
+  border-radius: 0.5rem;
+  background-color: #B22222;
+  color: #FFD700;
+`
+
 const MainContent = styled.div`
   width: 480px;
   height: 100%;
@@ -56,12 +92,12 @@ interface PuzzleSizeRowProps {
 const PuzzleSizeRow: React.FC<PuzzleSizeRowProps> = ({ solving, puzzleSize, onChangePuzzleSize }) => {
   return (
     <div>
-      <span>Puzzle size:</span>
+      <Span>Puzzle size:</Span>
       &nbsp;
-      <select disabled={solving} value={puzzleSize} onChange={e => onChangePuzzleSize(e.target.value)}>
+      <Select disabled={solving} value={puzzleSize} onChange={e => onChangePuzzleSize(e.target.value)}>
         <option value="3x3">3 x 3</option>
         <option value="4x4">4 x 4</option>
-      </select>
+      </Select>
     </div>
   )
 }
@@ -143,9 +179,9 @@ interface MoveCountRowProps {
 const MoveCountRow: React.FC<MoveCountRowProps> = ({ moveCount }) => {
   return (
     <PanelRow>
-      <span>Move count:</span>
+      <Span>Move count:</Span>
       &nbsp;
-      <span>{moveCount}</span>
+      <Span>{moveCount}</Span>
     </PanelRow>
   )
 }
@@ -169,14 +205,14 @@ const ButtonsRow: React.FC<ButtonsRowProps> = ({
 }) => {
   return (
     <PanelRow>
-      <button onClick={() => onReset()} disabled={solving}>Reset</button>
+      <Button onClick={() => onReset()} disabled={solving}>Reset</Button>
       &nbsp;
-      <button onClick={() => onScramble()} disabled={solving}>Scramble</button>
+      <Button onClick={() => onScramble()} disabled={solving}>Scramble</Button>
       &nbsp;
       {
         solving
-          ? <button onClick={() => onCancel()}>Cancel</button>
-          : <button disabled={solved} onClick={() => onSolve()}>Solve</button>
+          ? <Button onClick={() => onCancel()}>Cancel</Button>
+          : <Button disabled={solved} onClick={() => onSolve()}>Solve</Button>
       }
     </PanelRow>
   )
