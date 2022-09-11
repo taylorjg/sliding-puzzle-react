@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/sliding-puzzle-react/static/js/main.b49091ab.js",
+    "main.js": "/sliding-puzzle-react/static/js/main.79a990fd.js",
     "static/js/724.bfd6e407.chunk.js": "/sliding-puzzle-react/static/js/724.bfd6e407.chunk.js",
     "index.html": "/sliding-puzzle-react/index.html",
-    "main.b49091ab.js.map": "/sliding-puzzle-react/static/js/main.b49091ab.js.map",
+    "main.79a990fd.js.map": "/sliding-puzzle-react/static/js/main.79a990fd.js.map",
     "724.bfd6e407.chunk.js.map": "/sliding-puzzle-react/static/js/724.bfd6e407.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.b49091ab.js"
+    "static/js/main.79a990fd.js"
   ]
 }
