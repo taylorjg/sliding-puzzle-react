@@ -232,7 +232,7 @@ const getScrambledPuzzle = (puzzleSize: string): number[][] => {
 
 const App = () => {
 
-  const [puzzleSize, setPuzzleSize] = useState("4x4")
+  const [puzzleSize, setPuzzleSize] = useState("3x3")
   const [puzzle, setPuzzle] = useState(getSolvedPuzzle(puzzleSize))
   const [node, setNode] = useState<Logic.SlidingPuzzleNode>()
   const [moveCount, setMoveCount] = useState(0)
