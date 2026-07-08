@@ -15,6 +15,7 @@ _TODO_
 npm install
 npm run dev       # start dev server
 npm run build     # type-check and production build
+npm run test      # run tests
 npm run preview   # preview production build locally
 npm run lint      # run ESLint
 npm run deploy    # build and publish to GitHub Pages
