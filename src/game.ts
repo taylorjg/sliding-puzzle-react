@@ -43,6 +43,13 @@ const BLACK = 0x000000
 
 const GUTTER = 10
 
+const TILE_INSET = 0.98
+
+// Render at higher resolution on Retina displays so Scale.FIT has more pixels to work with.
+const BASE_SIZE = 400
+const getRenderScale = () => Math.min(window.devicePixelRatio || 1, 2)
+const getGameSize = () => Math.round(BASE_SIZE * getRenderScale())
+
 class BoardScene extends Phaser.Scene {
 
   numRows = 0
@@ -58,6 +65,22 @@ class BoardScene extends Phaser.Scene {
 
   public constructor() {
     super("BoardScene")
+  }
+
+  private tileFontSize(): number {
+    return Math.round(this.tileHeight * 0.5)
+  }
+
+  private textStyle(color: string): Phaser.Types.GameObjects.Text.TextStyle {
+    return {
+      fontFamily: "Arial, Helvetica, sans-serif",
+      fontSize: `${this.tileFontSize()}px`,
+      color,
+    }
+  }
+
+  private createTileLabel(value: number, color: string): Phaser.GameObjects.Text {
+    return this.add.text(0, 0, value.toString(), this.textStyle(color)).setOrigin(0.5)
   }
 
   public create() {
@@ -118,13 +141,14 @@ class BoardScene extends Phaser.Scene {
       const biggerTileWidth = this.tileWidth * 1.2
       const biggerTileHeight = this.tileHeight * 1.2
       const tileBackground = this.add.rectangle(0, 0, biggerTileWidth, biggerTileHeight, BLACK)
-      const tileFace = this.add.rectangle(0, 0, biggerTileWidth, biggerTileHeight, FIREBRICK).setScale(0.98)
-      const textStyle = {
-        fontSize: this.numRows === 4 ? "48px" : "64px",
-        color: colourNumberToString(GOLD)
-      }
+      const tileFace = this.add.rectangle(
+        0, 0,
+        biggerTileWidth * TILE_INSET,
+        biggerTileHeight * TILE_INSET,
+        FIREBRICK
+      )
       const values = range(this.numRows * this.numCols).slice(1)
-      const text = this.add.text(0, 0, values[0].toString(), textStyle).setOrigin(0.5)
+      const text = this.createTileLabel(values[0], colourNumberToString(GOLD))
       text.setData("valueIndex", 0)
       this.rotatingTile = this.add.container(cx, cy, [tileBackground, tileFace, text]).setDepth(2)
       this.add.existing(this.rotatingTile)
@@ -269,14 +293,14 @@ class BoardScene extends Phaser.Scene {
         if (!goalValueTileRef) continue
         const [goalValueRow, goalValueCol] = goalValueTileRef.position
         const colour = (goalValueRow + goalValueCol) % 2 ? ANTIQUE_WHITE : FIREBRICK
-        const rectangle = this.add.rectangle(0, 0, this.tileWidth, this.tileHeight, colour)
-        rectangle.setScale(0.98)
+        const rectangle = this.add.rectangle(
+          0, 0,
+          this.tileWidth * TILE_INSET,
+          this.tileHeight * TILE_INSET,
+          colour
+        )
 
-        const textStyle = {
-          fontSize: this.numRows === 4 ? "48px" : "64px",
-          color: colourNumberToString(GOLD)
-        }
-        const text = this.add.text(0, 0, value.toString(), textStyle).setOrigin(0.5)
+        const text = this.createTileLabel(value, colourNumberToString(GOLD))
 
         const tile = this.add.container(x, y, [rectangle, text])
         this.add.existing(tile)
@@ -293,15 +317,18 @@ class BoardScene extends Phaser.Scene {
 // This value could be anything really. The key point is that we use the same
 // value for both width and height. We are assuming that the #puzzle div is a
 // square as a result of the CSS applied to it.
-const SIZE = 400
-
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  roundPixels: true,
+  render: {
+    antialias: true,
+    antialiasGL: true,
+    roundPixels: true,
+  },
   scale: {
-    width: SIZE,
-    height: SIZE,
-    mode: Phaser.Scale.FIT
+    width: getGameSize(),
+    height: getGameSize(),
+    mode: Phaser.Scale.FIT,
+    autoRound: true,
   },
   backgroundColor: "#000000",
   scene: [BoardScene],
