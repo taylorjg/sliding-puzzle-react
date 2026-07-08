@@ -293,6 +293,7 @@ const SIZE = 400
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
+  roundPixels: true,
   scale: {
     width: SIZE,
     height: SIZE,
