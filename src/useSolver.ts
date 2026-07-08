@@ -6,7 +6,9 @@ export const useSolver = () => {
 
   const getWorker = () => {
     if (!workerRef.current) {
-      const worker = new Worker(new URL('./worker/worker.ts', import.meta.url))
+      const worker = new Worker(new URL('./worker/worker.ts', import.meta.url), {
+        type: 'module',
+      })
       workerRef.current = worker
     }
     return workerRef.current
