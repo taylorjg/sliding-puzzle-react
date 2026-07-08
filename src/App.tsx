@@ -134,9 +134,17 @@ const Puzzle: React.FC<PuzzleProps> = ({
   useEffect(() => {
     const game = initGame()
     const puzzleActions = makePuzzleActions(game)
-    game.events.on(BoardEventNames.GameInitialised, () => onGameInitialised(puzzleActions))
+    const onInit = () => onGameInitialised(puzzleActions)
+    game.events.on(BoardEventNames.GameInitialised, onInit)
     game.events.on(BoardEventNames.TileMoved, onTileMoved)
     game.events.on(BoardEventNames.FinishedPresentingSolution, onFinishedPresentingSolution)
+
+    return () => {
+      game.events.off(BoardEventNames.GameInitialised, onInit)
+      game.events.off(BoardEventNames.TileMoved, onTileMoved)
+      game.events.off(BoardEventNames.FinishedPresentingSolution, onFinishedPresentingSolution)
+      game.destroy(true)
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

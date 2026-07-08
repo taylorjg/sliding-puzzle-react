@@ -92,7 +92,7 @@ class BoardScene extends Phaser.Scene {
 
   private handleTileClick(tile: Phaser.GameObjects.Container) {
     if (this.node?.isSolution) return
-    if (this.tweens.getAllTweens().length > 0) return
+    if (this.tweens.getTweens().length > 0) return
     const [clickedRow, clickedCol] = tile.getData(["row", "col"])
     const blankTileRef = this.node?.boardManager.blankTile
     const move = this.determineMoveToMake(blankTileRef, clickedRow, clickedCol)

@@ -2,7 +2,7 @@ import { useRef } from "react"
 
 export const useSolver = () => {
 
-  const workerRef = useRef<Worker>()
+  const workerRef = useRef<Worker | undefined>(undefined)
 
   const getWorker = () => {
     if (!workerRef.current) {
