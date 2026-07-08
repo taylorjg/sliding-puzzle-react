@@ -269,7 +269,7 @@ const App = () => {
 
   useEffect(() => {
     setPuzzle(getScrambledPuzzle(puzzleSize))
-  }, [puzzleSize]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [puzzleSize])
 
   useEffect(() => {
     const tiles = Logic.makeTiles(puzzle)

@@ -262,7 +262,8 @@ class BoardScene extends Phaser.Scene {
         const y = GUTTER + row * this.tileHeight + this.tileHeight / 2
 
         const goalValueTileRef = tileRefs.find(tileRef => tileRef.goalValue === value)
-        const [goalValueRow, goalValueCol] = goalValueTileRef?.position
+        if (!goalValueTileRef) continue
+        const [goalValueRow, goalValueCol] = goalValueTileRef.position
         const colour = (goalValueRow + goalValueCol) % 2 ? ANTIQUE_WHITE : FIREBRICK
         const rectangle = this.add.rectangle(0, 0, this.tileWidth, this.tileHeight, colour)
         rectangle.setScale(0.98)
