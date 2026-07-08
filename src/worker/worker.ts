@@ -1,6 +1,5 @@
 import * as Logic from "../logic"
 
-// 'worker.ts' cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module.ts(1208)
 export { }
 
 let cancelled = false
@@ -19,7 +18,7 @@ const checkForCancellation = async (): Promise<boolean> => {
 }
 
 const extractMoves = (path: Logic.SlidingPuzzleNode[]): number[] => {
-  return path.slice(1).map(node => node.previousMove)
+  return path.slice(1).flatMap(node => node.previousMove ?? [])
 }
 
 const onSolve = async (puzzle: number[][]) => {

@@ -82,6 +82,7 @@ class BoardScene extends Phaser.Scene {
     for (const { index, move } of possibleMoves) {
       if (index >= 0) {
         const tile = this.node?.boardManager.tiles[index]
+        if (!tile) continue
         const [row, col] = tile.position
         if (row === clickedRow && col === clickedCol) {
           return move
@@ -95,6 +96,7 @@ class BoardScene extends Phaser.Scene {
     if (this.tweens.getTweens().length > 0) return
     const [clickedRow, clickedCol] = tile.getData(["row", "col"])
     const blankTileRef = this.node?.boardManager.blankTile
+    if (!blankTileRef) return
     const move = this.determineMoveToMake(blankTileRef, clickedRow, clickedCol)
     if (move) {
       this.moveTile(tile, blankTileRef, move)
@@ -201,6 +203,7 @@ class BoardScene extends Phaser.Scene {
     const move = this.solution?.shift()
     if (move) {
       const blankTileRef = this.node?.boardManager.blankTile
+      if (!blankTileRef) return
       const tile = this.determineTileToMove(blankTileRef, move)
       if (tile) {
         this.moveTile(tile, blankTileRef, move, () => this.presentNextSolutionMove())
@@ -227,7 +230,8 @@ class BoardScene extends Phaser.Scene {
       y,
       onComplete: () => {
         tile.setData({ row, col })
-        this.node = Logic.getChildOfNodeAndMove(this.node, move)
+        if (!this.node) return
+        this.node = Logic.getChildOfNodeAndMove(this.node, move as Logic.Move)
         this.game.events.emit(BoardEventNames.TileMoved, this.node)
         cb?.()
       }

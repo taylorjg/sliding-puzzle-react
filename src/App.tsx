@@ -326,7 +326,7 @@ const App = () => {
           <MoveCountRow moveCount={moveCount} />
           <ButtonsRow
             solving={solving}
-            solved={node?.isSolution}
+            solved={node?.isSolution ?? false}
             onReset={onReset}
             onScramble={onScramble}
             onSolve={onSolve}
