@@ -2,7 +2,7 @@
   "name": "sliding-puzzle-react",
   "description": "Sliding Puzzle using React and Phaser",
   "homepage": "https://taylorjg.github.io/sliding-puzzle-react",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": true,
   "dependencies": {
     "@types/node": "^26.0.0",
