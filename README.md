@@ -27,7 +27,7 @@ The app is deployed to [GitHub Pages](https://taylorjg.github.io/sliding-puzzle-
 
 The solver runs in a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) so the UI stays responsive while the puzzle is being solved.
 
-Vite has [built-in web worker support](https://vite.dev/guide/features.html#web-workers). The worker is created in [`src/useSolver.ts`](src/useSolver.ts) with:
+Vite has [built-in web worker support](https://vite.dev/guide/features.html#web-workers). The worker is created in [`src/use-solver.ts`](src/use-solver.ts) with:
 
 ```ts
 new Worker(new URL('./worker/worker.ts', import.meta.url), { type: 'module' })

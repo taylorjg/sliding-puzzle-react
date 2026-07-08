@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { initGame, PuzzleActions, makePuzzleActions, BoardEventNames } from "./game"
 import * as Logic from "./logic"
-import { useSolver } from "./useSolver"
+import { useSolver } from "./use-solver"
 import packageJson from "../package.json"
 
 const SOLVED_3x3 = [

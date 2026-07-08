@@ -1,4 +1,4 @@
-import { configure_ida_star } from "./ida_star"
+import { configure_ida_star } from "./ida-star"
 import { randomElement, range, splitEvery, sum } from "./utils"
 
 export type Position = [number, number]
