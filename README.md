@@ -1,3 +1,5 @@
+[![CI/CD](https://github.com/taylorjg/sliding-puzzle-react/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/taylorjg/sliding-puzzle-react/actions/workflows/ci-cd.yaml)
+
 # Description
 
 A little web app to play/solve [sliding puzzles](https://en.wikipedia.org/wiki/Sliding_puzzle).
