@@ -19,7 +19,7 @@
     "dev": "vite",
     "start": "vite",
     "build": "tsc --noEmit && vite build",
-    "lint": "eslint src",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "test": "vitest run",
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist",
