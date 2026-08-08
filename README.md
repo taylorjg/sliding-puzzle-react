@@ -14,7 +14,7 @@ _TODO_
 # Development
 
 ```bash
-npm install
+npm ci
 npm run dev       # start dev server
 npm run build     # type-check and production build
 npm run test      # run tests
