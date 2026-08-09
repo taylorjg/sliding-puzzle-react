@@ -32,21 +32,21 @@ The solver runs in a [web worker](https://developer.mozilla.org/en-US/docs/Web/A
 Vite has [built-in web worker support](https://vite.dev/guide/features.html#web-workers). The worker is created in [`src/use-solver.ts`](src/use-solver.ts) with:
 
 ```ts
-new Worker(new URL('./worker/worker.ts', import.meta.url), { type: 'module' })
+new Worker(new URL("./worker/worker.ts", import.meta.url), { type: "module" });
 ```
 
 The `type: 'module'` option is required because the worker uses ES `import` statements. Communication with the main thread uses [`postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage) and [`onmessage`](https://developer.mozilla.org/en-US/docs/Web/API/Worker/onmessage).
 
 # TODO
 
-* ~~Add an overlay/animation over the board whilst the web worker is trying to find a solution~~
-* ~~Implement cancellation of the web worker~~
-* Add sound effects
+- ~~Add an overlay/animation over the board whilst the web worker is trying to find a solution~~
+- ~~Implement cancellation of the web worker~~
+- Add sound effects
 
 # Links
 
-* [Sliding puzzle](https://en.wikipedia.org/wiki/Sliding_puzzle)
-* [Swift implementation of the Sliding Puzzle game with Iterative Deepening A* AI Solver](https://github.com/gsurma/sliding_puzzle)
-* [Iterative deepening A*](https://en.wikipedia.org/wiki/Iterative_deepening_A*)
-* [Web Workers | Vite](https://vite.dev/guide/features.html#web-workers)
-* [Phaser - A fast, fun and free open source HTML5 game framework](https://phaser.io/)
+- [Sliding puzzle](https://en.wikipedia.org/wiki/Sliding_puzzle)
+- [Swift implementation of the Sliding Puzzle game with Iterative Deepening A* AI Solver](https://github.com/gsurma/sliding_puzzle)
+- [Iterative deepening A*](https://en.wikipedia.org/wiki/Iterative_deepening_A*)
+- [Web Workers | Vite](https://vite.dev/guide/features.html#web-workers)
+- [Phaser - A fast, fun and free open source HTML5 game framework](https://phaser.io/)

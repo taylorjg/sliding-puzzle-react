@@ -1,57 +1,59 @@
-import * as Logic from "../logic"
+import * as Logic from "../logic";
 
-export { }
+export {};
 
-let cancelled = false
-let iterationCount = 0
+let cancelled = false;
+let iterationCount = 0;
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const checkForCancellation = async (): Promise<boolean> => {
-  iterationCount++
+  iterationCount++;
   if (iterationCount % 10000 === 0) {
-    await delay(0)
-    return cancelled
+    await delay(0);
+    return cancelled;
   } else {
-    return false
+    return false;
   }
-}
+};
 
 const extractMoves = (path: Logic.SlidingPuzzleNode[]): number[] => {
-  return path.slice(1).flatMap(node => node.previousMove ?? [])
-}
+  return path.slice(1).flatMap((node) => node.previousMove ?? []);
+};
 
 const onSolve = async (puzzle: number[][]) => {
-  console.log('[worker onSolve]')
-  cancelled = false
-  iterationCount = 0
-  const tiles = Logic.makeTiles(puzzle)
-  const root = new Logic.SlidingPuzzleNode(tiles)
-  const path = await Logic.solve(root, checkForCancellation)
-  const solution = path ? extractMoves(path) : undefined
-  console.log('[worker onSolve]', 'iterationCount:', iterationCount)
-  self.postMessage(solution)
-}
+  console.log("[worker onSolve]");
+  cancelled = false;
+  iterationCount = 0;
+  const tiles = Logic.makeTiles(puzzle);
+  const root = new Logic.SlidingPuzzleNode(tiles);
+  const path = await Logic.solve(root, checkForCancellation);
+  const solution = path ? extractMoves(path) : undefined;
+  console.log("[worker onSolve]", "iterationCount:", iterationCount);
+  self.postMessage(solution);
+};
 
 const onCancel = () => {
-  console.log('[worker onCancel]')
-  cancelled = true
-}
+  console.log("[worker onCancel]");
+  cancelled = true;
+};
 
 type SolveMessage = {
-  type: "solve"
-  puzzle: number[][]
-}
+  type: "solve";
+  puzzle: number[][];
+};
 
 type CancelMessage = {
-  type: "cancel"
-}
+  type: "cancel";
+};
 
-type Message = SolveMessage | CancelMessage
+type Message = SolveMessage | CancelMessage;
 
 self.onmessage = (ev: MessageEvent<Message>) => {
   switch (ev.data.type) {
-    case "solve": return onSolve(ev.data.puzzle)
-    case "cancel": return onCancel()
+    case "solve":
+      return onSolve(ev.data.puzzle);
+    case "cancel":
+      return onCancel();
   }
-}
+};
